@@ -12,16 +12,16 @@ export function getVibeCategory(grade?: GradeLevel): VibeCategory {
 }
 
 const STORAGE_KEYS = {
-  USER: 'yasse_user_profile',
-  STREAK: 'yasse_streak_data_v2', // Incremented key to purge legacy 5-day mock values
-  VIDEOS: 'yasse_videos_list',
-  DOUBTS: 'yasse_doubts_list',
+  USER: 'yasse_user_profile_v3',
+  STREAK: 'yasse_streak_data_v3',
+  VIDEOS: 'yasse_videos_list_v3',
+  DOUBTS: 'yasse_doubts_list_v3',
 };
 
 export function useYasseStore() {
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [videos, setVideos] = useState<VideoLecture[]>(MOCK_VIDEOS);
-  const [doubts, setDoubts] = useState<DoubtItem[]>(MOCK_DOUBTS);
+  const [videos, setVideos] = useState<VideoLecture[]>([]);
+  const [doubts, setDoubts] = useState<DoubtItem[]>([]);
   const [streak, setStreak] = useState<StreakData>(INITIAL_STREAK);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -37,6 +37,7 @@ export function useYasseStore() {
           email: 'yatishsathish3012@gmail.com',
           role: 'student',
           gender: 'male',
+          board: 'CBSE',
           googleSynced: true,
           avatarUrl: 'https://api.dicebear.com/7.x/bottts/svg?seed=Yash',
           grade: 'Class 5',
@@ -48,27 +49,32 @@ export function useYasseStore() {
         setUser(defaultUser);
       }
 
-      // Read streak data; force zero baseline if legacy non-zero values found
+      // Read streak data; force zero baseline
       const savedStreak = localStorage.getItem(STORAGE_KEYS.STREAK);
       if (savedStreak) {
-        const parsed = JSON.parse(savedStreak);
-        if (!parsed.calendarLogs || parsed.calendarLogs.length === 0) {
-          // Reset to zero baseline
-          setStreak(INITIAL_STREAK);
-          localStorage.setItem(STORAGE_KEYS.STREAK, JSON.stringify(INITIAL_STREAK));
-        } else {
-          setStreak(parsed);
-        }
+        setStreak(JSON.parse(savedStreak));
       } else {
         setStreak(INITIAL_STREAK);
         localStorage.setItem(STORAGE_KEYS.STREAK, JSON.stringify(INITIAL_STREAK));
       }
 
+      // Read videos list; default to empty array
       const savedVideos = localStorage.getItem(STORAGE_KEYS.VIDEOS);
-      if (savedVideos) setVideos(JSON.parse(savedVideos));
+      if (savedVideos) {
+        setVideos(JSON.parse(savedVideos));
+      } else {
+        setVideos([]);
+        localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify([]));
+      }
 
+      // Read doubts list; default to empty array
       const savedDoubts = localStorage.getItem(STORAGE_KEYS.DOUBTS);
-      if (savedDoubts) setDoubts(JSON.parse(savedDoubts));
+      if (savedDoubts) {
+        setDoubts(JSON.parse(savedDoubts));
+      } else {
+        setDoubts([]);
+        localStorage.setItem(STORAGE_KEYS.DOUBTS, JSON.stringify([]));
+      }
     } catch (e) {
       console.error('Error loading YASSE local storage', e);
     } finally {

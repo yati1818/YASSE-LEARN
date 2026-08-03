@@ -13,7 +13,8 @@ import { PwaUpdateNotification } from '@/components/ui/PwaUpdateNotification';
 import { EducationalGamesModal } from '@/components/games/EducationalGamesModal';
 import { useYasseStore } from '@/lib/store';
 import { GradeLevel } from '@/lib/types';
-import { Search, BookOpen, ShieldCheck, Flame, HelpCircle, CheckCircle2, Compass, Sparkles, Award, Gamepad2 } from 'lucide-react';
+import { Search, BookOpen, ShieldCheck, Flame, HelpCircle, CheckCircle2, Compass, Sparkles, Award, Gamepad2, Info } from 'lucide-react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const { user, saveUser, videos, addVideo, streak, doubts, incrementBrainStreak, vibeCategory, isLoaded } = useYasseStore();
@@ -50,10 +51,10 @@ export default function DashboardPage() {
   const isSenior = vibeCategory === 'senior';
 
   const courseHubs = [
-    { title: 'Science & Nature 🧪', count: '12 Lectures', color: 'from-pink-500 to-purple-600' },
-    { title: 'Mathematics & Puzzles 🧮', count: '18 Lectures', color: 'from-cyan-500 to-blue-600' },
-    { title: 'Physics & Energy ⚡', count: '15 Lectures', color: 'from-amber-500 to-orange-600' },
-    { title: 'Chemistry & Reactions 🧪', count: '10 Lectures', color: 'from-emerald-500 to-teal-600' },
+    { title: 'Science & Nature 🧪', count: `${filteredVideos.filter(v => v.subject === 'Science').length} Verified`, color: 'from-pink-500 to-purple-600' },
+    { title: 'Mathematics & Puzzles 🧮', count: `${filteredVideos.filter(v => v.subject === 'Mathematics').length} Verified`, color: 'from-cyan-500 to-blue-600' },
+    { title: 'Physics & Energy ⚡', count: `${filteredVideos.filter(v => v.subject === 'Physics').length} Verified`, color: 'from-amber-500 to-orange-600' },
+    { title: 'Chemistry & Reactions 🧪', count: `${filteredVideos.filter(v => v.subject === 'Chemistry').length} Verified`, color: 'from-emerald-500 to-teal-600' },
   ];
 
   return (
@@ -153,26 +154,40 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
               <BookOpen className="text-cyan-400" size={22} />
-              <span>Developer Approved Live Lectures</span>
+              <span>Verified Educator Live Lectures</span>
               <span className="text-xs font-normal text-slate-400">({filteredVideos.length} Available)</span>
             </h2>
 
             <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold bg-emerald-950/40 px-3 py-1 rounded-full border border-emerald-500/30">
               <CheckCircle2 size={14} />
-              <span>Email Approver Target: yatishsathish3012@gmail.com</span>
+              <span>Developer Approvals: yatishsathish3012@gmail.com</span>
             </div>
           </div>
 
           {filteredVideos.length === 0 ? (
-            <div className="py-16 text-center space-y-3 bg-slate-900/40 rounded-3xl border border-slate-800">
-              <BookOpen size={40} className="mx-auto text-slate-600" />
-              <h3 className="text-lg font-bold text-slate-300">No approved lectures found matching your search.</h3>
-              <button
-                onClick={() => { setSelectedSubject('All'); setSearchQuery(''); }}
-                className="px-4 py-2 rounded-xl bg-slate-800 text-cyan-300 text-xs font-bold"
-              >
-                Reset Filters
-              </button>
+            <div className="py-16 text-center space-y-4 bg-slate-900/60 rounded-3xl border border-slate-800 p-8 max-w-2xl mx-auto shadow-2xl">
+              <Info size={44} className="mx-auto text-cyan-400 animate-bounce" />
+              <div className="space-y-2">
+                <h3 className="text-xl font-extrabold text-white">No Verified Lectures Uploaded Yet</h3>
+                <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
+                  No verified lectures or courses are available for this grade yet. Trusted educator content will appear here once verified by AI and published.
+                </p>
+              </div>
+
+              <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+                <Link
+                  href="/teacher/studio"
+                  className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-md transition-transform"
+                >
+                  Upload Educator Lecture 👩‍🏫
+                </Link>
+                <button
+                  onClick={() => { setSelectedSubject('All'); setSearchQuery(''); }}
+                  className="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold hover:text-white"
+                >
+                  Reset Filter
+                </button>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -193,31 +208,37 @@ export default function DashboardPage() {
                 <HelpCircle className="text-purple-400" size={20} />
                 <span>Doubt Clarification Feed</span>
               </h3>
-              <span className="text-xs text-slate-400 font-mono">Dispatched to Teacher Inbox & yatishsathish3012@gmail.com</span>
+              <span className="text-xs text-slate-400 font-mono">Target: yatishsathish3012@gmail.com</span>
             </div>
 
-            <div className="space-y-3">
-              {doubts.map((d) => (
-                <div key={d.id} className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-cyan-300">{d.studentName} ({d.studentGrade})</span>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                      d.status === 'answered' ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30' : 'bg-amber-950 text-amber-400 border border-amber-500/30'
-                    }`}>
-                      {d.status === 'answered' ? '✓ Answered by Teacher' : '⏱ Pending Response'}
-                    </span>
-                  </div>
-                  <div className="text-sm font-semibold text-slate-200">{d.questionTitle}</div>
-                  <p className="text-xs text-slate-400 line-clamp-2">{d.questionDetails}</p>
-                  
-                  {d.answerText && (
-                    <div className="mt-2 p-3 rounded-xl bg-purple-950/40 border border-purple-500/30 text-xs text-purple-200">
-                      <strong>Teacher Reply:</strong> {d.answerText}
+            {doubts.length === 0 ? (
+              <div className="py-10 text-center text-xs text-slate-400 bg-slate-950 rounded-2xl border border-slate-800">
+                No active student doubts submitted yet. Click on any video lecture to ask a doubt!
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {doubts.map((d) => (
+                  <div key={d.id} className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-cyan-300">{d.studentName} ({d.studentGrade})</span>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                        d.status === 'answered' ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30' : 'bg-amber-950 text-amber-400 border border-amber-500/30'
+                      }`}>
+                        {d.status === 'answered' ? '✓ Answered by Teacher' : '⏱ Pending Response'}
+                      </span>
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                    <div className="text-sm font-semibold text-slate-200">{d.questionTitle}</div>
+                    <p className="text-xs text-slate-400 line-clamp-2">{d.questionDetails}</p>
+                    
+                    {d.answerText && (
+                      <div className="mt-2 p-3 rounded-xl bg-purple-950/40 border border-purple-500/30 text-xs text-purple-200">
+                        <strong>Teacher Reply:</strong> {d.answerText}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Col 3: GitHub-Style Activity Streak Heatmap */}
