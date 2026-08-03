@@ -7,6 +7,8 @@ import { AdaptiveHeader } from '@/components/dashboard/AdaptiveHeader';
 import { VideoCard } from '@/components/dashboard/VideoCard';
 import { GitHubStreakHeatmap } from '@/components/streaks/GitHubStreakHeatmap';
 import { YasseAiWidget } from '@/components/ai-assistant/YasseAiWidget';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { PwaInstallPrompt } from '@/components/ui/PwaInstallPrompt';
 import { useYasseStore } from '@/lib/store';
 import { GradeLevel } from '@/lib/types';
 import { Search, BookOpen, ShieldCheck, Flame, HelpCircle, CheckCircle2, Compass, Sparkles, Award } from 'lucide-react';
@@ -48,7 +50,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className={`min-h-screen flex flex-col justify-between transition-colors ${
+    <div className={`min-h-screen flex flex-col justify-between pb-16 md:pb-0 transition-colors ${
       isJunior 
         ? 'bg-[#0f071d] text-purple-100' 
         : isSenior 
@@ -201,8 +203,12 @@ export default function DashboardPage() {
         </section>
       </main>
 
-      {/* YASSE ChatGPT AI Helper Widget */}
+      {/* YASSE ChatGPT AI Companion Widget */}
       <YasseAiWidget grade={userGrade} currentSubject={selectedSubject === 'All' ? 'Science' : selectedSubject} />
+
+      {/* PWA Mobile App Components */}
+      <PwaInstallPrompt />
+      <MobileBottomNav />
 
       <Footer />
     </div>

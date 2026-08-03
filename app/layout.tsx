@@ -1,10 +1,24 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'YASSE Learn | Free Educational Platform Class 3 to 12',
-  description: 'A production-ready, highly engaging, playful yet professional free educational web platform for Class 3 to 12. Featuring AI compliance video verification, doubt clarification dispatch, dual gamified streaks, and YASSE AI study helper.',
-  keywords: ['YASSE Learn', 'EdTech', 'Free Education', 'Class 3-12', 'AI Verification', 'Doubt Clarification', 'CBSE', 'ICSE', 'NCERT'],
+  title: 'YASSE Learn - Premier Educational Platform & Mobile App',
+  description: 'Free gamified educational app for Class 3 to Class 12 students with AI verified lectures, GitHub-style contribution streaks, and ChatGPT AI tutoring.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'YASSE Learn App',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#070d1e',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
@@ -15,9 +29,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/bottts/svg?seed=YasseAppIcon" />
       </head>
-      <body className="antialiased min-h-screen bg-slate-950 text-slate-100">
+      <body className="bg-[#070d1e] text-slate-100 antialiased font-sans min-h-screen selection:bg-cyan-500 selection:text-slate-950">
         {children}
       </body>
     </html>

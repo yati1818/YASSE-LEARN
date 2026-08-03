@@ -1,0 +1,25 @@
+{
+  "name": "YASSE Learn - Educational App",
+  "short_name": "YASSE App",
+  "description": "Premier Free Educational Platform & AI Companion for Class 3 to Class 12 Students",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070d1e",
+  "theme_color": "#070d1e",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "https://api.dicebear.com/7.x/bottts/svg?seed=YasseAppIcon",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://api.dicebear.com/7.x/bottts/svg?seed=YasseAppIcon",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
