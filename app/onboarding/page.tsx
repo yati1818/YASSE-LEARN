@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { GraduationCap, ShieldCheck, User, CheckCircle2, Lock, Eye, ArrowRight, Sparkles, Upload, Phone, KeyRound, Check } from 'lucide-react';
+import { GraduationCap, ShieldCheck, User, CheckCircle2, Lock, Eye, ArrowRight, Sparkles, Upload, Phone, KeyRound, Check, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useYasseStore } from '@/lib/store';
-import { UserRole, GradeLevel, UserPrivacySettings, GenderType } from '@/lib/types';
+import { UserRole, GradeLevel, UserPrivacySettings, GenderType, CurriculumBoard } from '@/lib/types';
 import confetti from 'canvas-confetti';
 
 function OnboardingContent() {
@@ -17,13 +17,14 @@ function OnboardingContent() {
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [gender, setGender] = useState<GenderType>(user?.gender || 'male');
+  const [board, setBoard] = useState<CurriculumBoard>(user?.board || 'CBSE');
   const [googleSynced, setGoogleSynced] = useState(user?.googleSynced || false);
   const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl || 'https://api.dicebear.com/7.x/bottts/svg?seed=Student');
   const [grade, setGrade] = useState<GradeLevel>(user?.grade || 'Class 5');
   const [bio, setBio] = useState(user?.bio || '');
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>(user?.subjects || ['Science', 'Mathematics']);
 
-  // Teacher Private Mobile Verification
+  // Mobile Verification
   const [mobileNumber, setMobileNumber] = useState(user?.privateMobileNumber || '');
   const [isMobileVerified, setIsMobileVerified] = useState(user?.teacherMobileVerified || false);
   const [showMobileOtpModal, setShowMobileOtpModal] = useState(false);
@@ -67,7 +68,7 @@ function OnboardingContent() {
     }
   };
 
-  // Send Mobile Verification OTP for Teachers
+  // Send Mobile Verification OTP
   const handleSendMobileOtp = () => {
     if (!mobileNumber || mobileNumber.length < 10) return;
     const generated = Math.floor(1000 + Math.random() * 9000).toString();
@@ -88,19 +89,6 @@ function OnboardingContent() {
     'Class 9', 'Class 10', 'Class 11', 'Class 12'
   ];
 
-  const availableSubjects = [
-    'Science', 'Mathematics', 'Physics', 'Chemistry', 'Biology',
-    'English', 'Environmental Science', 'Computer Science', 'Logic & Puzzles'
-  ];
-
-  const toggleSubject = (sub: string) => {
-    if (selectedSubjects.includes(sub)) {
-      setSelectedSubjects(selectedSubjects.filter(s => s !== sub));
-    } else {
-      setSelectedSubjects([...selectedSubjects, sub]);
-    }
-  };
-
   const handleCompleteSetup = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) return;
@@ -111,6 +99,7 @@ function OnboardingContent() {
       email: email || 'yatishsathish3012@gmail.com',
       role,
       gender,
+      board,
       googleSynced,
       avatarUrl,
       grade: role === 'student' ? grade : undefined,
@@ -149,7 +138,7 @@ function OnboardingContent() {
             Tailor Your YASSE Learn Account
           </h2>
           <p className="text-xs text-slate-400">
-            Sync Gmail account, upload profile photo, and configure privacy.
+            Sync Gmail account, select Curriculum Board, and verify mobile.
           </p>
         </div>
 
@@ -217,25 +206,23 @@ function OnboardingContent() {
             </div>
           </div>
 
-          {/* Profile Photo Upload & Gender */}
-          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-center gap-4">
-            <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-cyan-400 shrink-0">
-              <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-            </div>
-
-            <div className="flex-1 space-y-2 text-center sm:text-left">
-              <label className="block text-xs font-bold text-slate-200">Profile Photo</label>
-              <div className="flex items-center gap-2 justify-center sm:justify-start">
-                <label className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold cursor-pointer flex items-center gap-1.5">
-                  <Upload size={14} className="text-cyan-400" />
-                  <span>Upload Photo</span>
+          {/* Profile Photo Upload, Gender & Curriculum Board */}
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+            <div className="flex items-center gap-3">
+              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-cyan-400 shrink-0">
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <label className="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold cursor-pointer flex items-center gap-1">
+                  <Upload size={12} className="text-cyan-400" />
+                  <span>Photo</span>
                   <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
                 </label>
               </div>
             </div>
 
             {/* Gender Selector */}
-            <div className="w-full sm:w-auto">
+            <div>
               <label className="block text-xs font-bold text-slate-300 mb-1">Gender</label>
               <select
                 value={gender}
@@ -245,6 +232,21 @@ function OnboardingContent() {
                 <option value="male">👨 Male</option>
                 <option value="female">👩 Female</option>
                 <option value="other">✨ Other</option>
+              </select>
+            </div>
+
+            {/* Board Selector */}
+            <div>
+              <label className="block text-xs font-bold text-slate-300 mb-1">Curriculum Board</label>
+              <select
+                value={board}
+                onChange={(e) => setBoard(e.target.value as CurriculumBoard)}
+                className="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 text-xs focus:border-cyan-500"
+              >
+                <option value="CBSE">🏫 CBSE</option>
+                <option value="ICSE">📘 ICSE</option>
+                <option value="State Board">🏛 State Board</option>
+                <option value="International">🌐 International</option>
               </select>
             </div>
           </div>
@@ -300,70 +302,36 @@ function OnboardingContent() {
             </div>
           )}
 
-          {/* Private Mobile Verification for Teachers */}
-          {role === 'teacher' && (
-            <div className="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                  <Phone size={14} /> Teacher Private Mobile Verification
-                </label>
-                {isMobileVerified && (
-                  <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">
-                    <Check size={14} /> Verified (Private)
-                  </span>
-                )}
-              </div>
-
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={mobileNumber}
-                  onChange={(e) => setMobileNumber(e.target.value)}
-                  placeholder="+91 98765 43210 (Kept 100% Private)"
-                  className="flex-1 px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:border-amber-500"
-                />
-                {!isMobileVerified && (
-                  <button
-                    type="button"
-                    onClick={handleSendMobileOtp}
-                    className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold"
-                  >
-                    Verify SMS OTP
-                  </button>
-                )}
-              </div>
-              <p className="text-[11px] text-slate-400">
-                🔒 Your mobile number is kept 100% private to your teacher account and is never shown publicly.
-              </p>
+          {/* Mobile Verification Step */}
+          <div className="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                <Phone size={14} /> Mobile Number OTP Verification
+              </label>
+              {isMobileVerified && (
+                <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">
+                  <Check size={14} /> Verified
+                </span>
+              )}
             </div>
-          )}
 
-          {/* Privacy Visibility Toggles */}
-          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
-            <h4 className="text-xs font-bold text-slate-200 flex items-center gap-1.5 uppercase tracking-wider">
-              <Lock size={14} className="text-purple-400" /> Public Profile Privacy Visibility Toggles
-            </h4>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer">
-                <span className="text-slate-300 font-medium">Show Public Profile</span>
-                <input
-                  type="checkbox"
-                  checked={privacy.isProfilePublic}
-                  onChange={(e) => setPrivacy({ ...privacy, isProfilePublic: e.target.checked })}
-                  className="w-4 h-4 accent-cyan-500 rounded cursor-pointer"
-                />
-              </label>
-
-              <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer">
-                <span className="text-slate-300 font-medium">Show Video/Brain Streaks</span>
-                <input
-                  type="checkbox"
-                  checked={privacy.showStreaks}
-                  onChange={(e) => setPrivacy({ ...privacy, showStreaks: e.target.checked })}
-                  className="w-4 h-4 accent-cyan-500 rounded cursor-pointer"
-                />
-              </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={mobileNumber}
+                onChange={(e) => setMobileNumber(e.target.value)}
+                placeholder="+91 98765 43210"
+                className="flex-1 px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:border-amber-500"
+              />
+              {!isMobileVerified && (
+                <button
+                  type="button"
+                  onClick={handleSendMobileOtp}
+                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold"
+                >
+                  Verify SMS OTP
+                </button>
+              )}
             </div>
           </div>
 
@@ -377,15 +345,14 @@ function OnboardingContent() {
         </form>
       </motion.div>
 
-      {/* Mobile OTP Verification Modal */}
+      {/* Mobile OTP Modal */}
       {showMobileOtpModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
           <div className="bg-slate-900 border border-slate-700 rounded-3xl p-6 max-w-sm w-full space-y-4 text-center">
             <h3 className="text-lg font-bold text-white">Enter Mobile Verification OTP</h3>
             <p className="text-xs text-slate-300">
-              Enter 4-digit code sent to <strong className="text-cyan-300">{mobileNumber}</strong>.
+              Enter 4-digit code dispatched to <strong className="text-cyan-300">{mobileNumber}</strong>.
             </p>
-            <div className="text-[11px] text-amber-400 font-mono">[Test Code: {demoMobileOtp}]</div>
             <input
               type="text"
               maxLength={4}
@@ -398,7 +365,7 @@ function OnboardingContent() {
               onClick={handleVerifyMobileOtp}
               className="w-full py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
             >
-              Verify & Secure Account
+              Verify & Complete Setup
             </button>
           </div>
         </div>

@@ -10,14 +10,16 @@ import { YasseAiWidget } from '@/components/ai-assistant/YasseAiWidget';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { PwaInstallPrompt } from '@/components/ui/PwaInstallPrompt';
 import { PwaUpdateNotification } from '@/components/ui/PwaUpdateNotification';
+import { EducationalGamesModal } from '@/components/games/EducationalGamesModal';
 import { useYasseStore } from '@/lib/store';
 import { GradeLevel } from '@/lib/types';
-import { Search, BookOpen, ShieldCheck, Flame, HelpCircle, CheckCircle2, Compass, Sparkles, Award } from 'lucide-react';
+import { Search, BookOpen, ShieldCheck, Flame, HelpCircle, CheckCircle2, Compass, Sparkles, Award, Gamepad2 } from 'lucide-react';
 
 export default function DashboardPage() {
-  const { user, saveUser, videos, addVideo, streak, doubts, vibeCategory, isLoaded } = useYasseStore();
+  const { user, saveUser, videos, addVideo, streak, doubts, incrementBrainStreak, vibeCategory, isLoaded } = useYasseStore();
   const [selectedSubject, setSelectedSubject] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [showGamesModal, setShowGamesModal] = useState(false);
 
   if (!isLoaded) return null;
 
@@ -38,6 +40,10 @@ export default function DashboardPage() {
     if (user) {
       saveUser({ ...user, grade: newGrade });
     }
+  };
+
+  const handleRewardGameXP = (xpGained: number, badgeName: string) => {
+    incrementBrainStreak(xpGained, badgeName);
   };
 
   const isJunior = vibeCategory === 'junior';
@@ -72,6 +78,29 @@ export default function DashboardPage() {
         
         {/* Adaptive Dynamic Header */}
         <AdaptiveHeader user={user} vibeCategory={vibeCategory} />
+
+        {/* Educational Mini-Games Banner Trigger */}
+        <div className="p-5 rounded-3xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-slate-950 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl border border-amber-300/30">
+          <div className="flex items-center gap-3 text-center sm:text-left">
+            <div className="p-3 rounded-2xl bg-slate-950 text-amber-400 shrink-0">
+              <Gamepad2 size={28} />
+            </div>
+            <div>
+              <h3 className="font-black text-lg text-slate-950">Educational Mini-Games Hub 🎮🧮</h3>
+              <p className="text-xs font-bold text-slate-900 opacity-90">
+                Play Math Sprint & Science Match to earn Brain Synapse XP (+100 XP) and extend your streak!
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setShowGamesModal(true)}
+            className="px-5 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-900 text-amber-400 font-extrabold text-xs shadow-md transition-transform active:scale-95 shrink-0 flex items-center gap-1.5"
+          >
+            <Sparkles size={16} className="text-amber-300" />
+            <span>Play Mini-Games →</span>
+          </button>
+        </div>
 
         {/* Course Subject Hubs Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -119,7 +148,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Video Lectures Grid */}
+        {/* Video Lectures Grid Feed */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
@@ -206,6 +235,13 @@ export default function DashboardPage() {
 
       {/* YASSE ChatGPT AI Companion Widget */}
       <YasseAiWidget grade={userGrade} currentSubject={selectedSubject === 'All' ? 'Science' : selectedSubject} />
+
+      {/* Educational Games Modal */}
+      <EducationalGamesModal
+        isOpen={showGamesModal}
+        onClose={() => setShowGamesModal(false)}
+        onRewardXP={handleRewardGameXP}
+      />
 
       {/* Enterprise PWA App Components */}
       <PwaUpdateNotification />

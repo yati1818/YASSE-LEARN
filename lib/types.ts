@@ -9,6 +9,8 @@ export type VibeCategory = 'junior' | 'middle' | 'senior';
 
 export type GenderType = 'male' | 'female' | 'other';
 
+export type CurriculumBoard = 'CBSE' | 'ICSE' | 'State Board' | 'International';
+
 export interface UserPrivacySettings {
   isProfilePublic: boolean;
   showStreaks: boolean;
@@ -23,6 +25,7 @@ export interface UserProfile {
   role: UserRole;
   avatarUrl: string;
   gender?: GenderType;
+  board?: CurriculumBoard;
   googleSynced?: boolean;
   grade?: GradeLevel;
   subjects: string[];
