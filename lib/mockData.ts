@@ -4,6 +4,7 @@ import { VideoLecture, UserProfile, DoubtItem, StreakData } from './types';
 export const MOCK_TEACHERS: UserProfile[] = [
   {
     id: 't1',
+    username: 'ananya_physics',
     name: 'Dr. Ananya Sharma',
     email: 'ananya.physics@yasselearn.edu',
     role: 'teacher',
@@ -23,6 +24,7 @@ export const MOCK_TEACHERS: UserProfile[] = [
   },
   {
     id: 't2',
+    username: 'rajesh_maths',
     name: 'Prof. Rajesh Verma',
     email: 'rajesh.maths@yasselearn.edu',
     role: 'teacher',

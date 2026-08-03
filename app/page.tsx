@@ -2,17 +2,20 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ShieldCheck, Lock, Phone, ArrowRight, Sparkles, CheckCircle2, AlertCircle, KeyRound, User, BookOpen } from 'lucide-react';
+import { ShieldCheck, Lock, Phone, ArrowRight, Sparkles, CheckCircle2, AlertCircle, KeyRound, User, BookOpen, GraduationCap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SecurityCaptcha } from '@/components/ui/SecurityCaptcha';
 import { useYasseStore } from '@/lib/store';
+import { UserRole } from '@/lib/types';
 
 export default function LandingPage() {
   const router = useRouter();
   const { saveUser } = useYasseStore();
 
   const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
+  const [role, setRole] = useState<UserRole>('student');
   const [mobileNumber, setMobileNumber] = useState('');
+  const [username, setUsername] = useState('');
   const [pin, setPin] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('yatishsathish3012@gmail.com');
@@ -59,7 +62,7 @@ export default function LandingPage() {
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mobileNumber: cleanMobile, pin, name, email, grade, board }),
+          body: JSON.stringify({ mobileNumber: cleanMobile, username, pin, name, email, role, grade, board }),
         });
 
         const data = await res.json();
@@ -81,13 +84,13 @@ export default function LandingPage() {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-tr from-cyan-500/10 via-purple-600/10 to-amber-500/10 rounded-full blur-[180px] pointer-events-none" />
 
-      {/* Corporate SBI-Style Top Security Banner */}
+      {/* Top Banner */}
       <div className="w-full max-w-lg mb-4 p-3 rounded-2xl bg-slate-900/90 border border-slate-800 backdrop-blur-xl flex items-center justify-between text-xs">
         <div className="flex items-center gap-2 text-cyan-400 font-bold">
-          <ShieldCheck size={18} />
-          <span>YASSE SBI-Grade Institutional Security</span>
+          <BookOpen size={18} />
+          <span>YASSE Learn Premier Educational Platform</span>
         </div>
-        <span className="text-[10px] text-emerald-400 font-mono">256-bit TLS Encrypted</span>
+        <span className="text-[10px] text-emerald-400 font-mono">100% Free & Open</span>
       </div>
 
       <motion.div
@@ -95,14 +98,14 @@ export default function LandingPage() {
         animate={{ opacity: 1, scale: 1 }}
         className="relative w-full max-w-lg bg-slate-900/95 border border-slate-800 rounded-3xl p-6 sm:p-8 backdrop-blur-2xl shadow-2xl space-y-6"
       >
-        {/* Portal Header */}
+        {/* Header */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 font-extrabold text-xs border border-cyan-400/40">
-            <Lock size={14} className="text-amber-400" />
-            <span>Strict Authentication Barrier</span>
+            <Sparkles size={14} className="text-amber-400" />
+            <span>Official Student & Teacher Portal</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            YASSE Learn Official Portal
+            Welcome to YASSE Learn
           </h1>
           <p className="text-xs text-slate-400">
             One Mobile Number = One Unique Account Standard
@@ -118,7 +121,7 @@ export default function LandingPage() {
               activeTab === 'login' ? 'bg-cyan-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            🔒 Sign In (Registered Users)
+            🔑 Sign In (Registered)
           </button>
           <button
             type="button"
@@ -127,7 +130,7 @@ export default function LandingPage() {
               activeTab === 'signup' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            ✨ Sign Up (New Mobile)
+            ✨ Sign Up (New Account)
           </button>
         </div>
 
@@ -136,8 +139,54 @@ export default function LandingPage() {
           
           {activeTab === 'signup' && (
             <div className="space-y-3">
+              {/* Role Selection */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">Full Student / Educator Name</label>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                  Select Your Main Role
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setRole('student')}
+                    className={`p-3 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                      role === 'student'
+                        ? 'bg-purple-600 text-white border-purple-400'
+                        : 'bg-slate-950 text-slate-400 border-slate-800'
+                    }`}
+                  >
+                    <GraduationCap size={16} />
+                    <span>Student (Class 3-12)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setRole('teacher')}
+                    className={`p-3 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                      role === 'teacher'
+                        ? 'bg-amber-500 text-slate-950 border-amber-400'
+                        : 'bg-slate-950 text-slate-400 border-slate-800'
+                    }`}
+                  >
+                    <ShieldCheck size={16} />
+                    <span>Teacher / Graduate</span>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Unique Username (@handle)</label>
+                <input
+                  type="text"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                  placeholder="e.g. yatish_sathish"
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-cyan-300 text-sm font-mono focus:border-purple-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">Full Name</label>
                 <input
                   type="text"
                   required
@@ -232,7 +281,7 @@ export default function LandingPage() {
                 : 'bg-slate-800 text-slate-500 cursor-not-allowed'
             }`}
           >
-            <span>{loading ? 'Authenticating...' : activeTab === 'login' ? 'Authenticate & Access Dashboard' : 'Create Bank-Verified Account'}</span>
+            <span>{loading ? 'Authenticating...' : activeTab === 'login' ? 'Sign In to Workspace' : 'Register Learner Account'}</span>
             <ArrowRight size={16} />
           </button>
         </form>

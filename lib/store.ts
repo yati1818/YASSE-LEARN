@@ -12,10 +12,10 @@ export function getVibeCategory(grade?: GradeLevel): VibeCategory {
 }
 
 const STORAGE_KEYS = {
-  USER: 'yasse_user_profile_v3',
-  STREAK: 'yasse_streak_data_v3',
-  VIDEOS: 'yasse_videos_list_v3',
-  DOUBTS: 'yasse_doubts_list_v3',
+  USER: 'yasse_user_profile_v4',
+  STREAK: 'yasse_streak_data_v4',
+  VIDEOS: 'yasse_videos_list_v4',
+  DOUBTS: 'yasse_doubts_list_v4',
 };
 
 export function useYasseStore() {
@@ -33,6 +33,7 @@ export function useYasseStore() {
       } else {
         const defaultUser: UserProfile = {
           id: 'user-default-1',
+          username: 'yashwardhan',
           name: 'Yashwardhan Sharma',
           email: 'yatishsathish3012@gmail.com',
           role: 'student',
@@ -43,13 +44,15 @@ export function useYasseStore() {
           grade: 'Class 5',
           subjects: ['Science', 'Mathematics', 'English'],
           bio: 'Enthusiastic Grade 5 student loving science experiments and math puzzles!',
+          studySecondsToday: 0,
+          friends: [],
+          friendRequests: [],
           privacy: { isProfilePublic: true, showStreaks: true, showBadges: true, showDoubtsCount: true },
           createdAt: new Date().toISOString(),
         };
         setUser(defaultUser);
       }
 
-      // Read streak data; force zero baseline
       const savedStreak = localStorage.getItem(STORAGE_KEYS.STREAK);
       if (savedStreak) {
         setStreak(JSON.parse(savedStreak));
@@ -58,7 +61,6 @@ export function useYasseStore() {
         localStorage.setItem(STORAGE_KEYS.STREAK, JSON.stringify(INITIAL_STREAK));
       }
 
-      // Read videos list; default to empty array
       const savedVideos = localStorage.getItem(STORAGE_KEYS.VIDEOS);
       if (savedVideos) {
         setVideos(JSON.parse(savedVideos));
@@ -67,7 +69,6 @@ export function useYasseStore() {
         localStorage.setItem(STORAGE_KEYS.VIDEOS, JSON.stringify([]));
       }
 
-      // Read doubts list; default to empty array
       const savedDoubts = localStorage.getItem(STORAGE_KEYS.DOUBTS);
       if (savedDoubts) {
         setDoubts(JSON.parse(savedDoubts));

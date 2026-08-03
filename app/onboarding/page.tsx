@@ -14,6 +14,7 @@ function OnboardingContent() {
   const { user, saveUser } = useYasseStore();
 
   const [role, setRole] = useState<UserRole>('student');
+  const [username, setUsername] = useState(user?.username || 'learner');
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [gender, setGender] = useState<GenderType>(user?.gender || 'male');
@@ -52,6 +53,7 @@ function OnboardingContent() {
   const handleGoogleSync = () => {
     setName('Yatish Sathish');
     setEmail('yatishsathish3012@gmail.com');
+    setUsername('yatish_sathish');
     setGoogleSynced(true);
     setAvatarUrl('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80');
   };
@@ -145,6 +147,7 @@ function OnboardingContent() {
 
     const updatedUser = {
       id: user?.id || `user-${Date.now()}`,
+      username: username || 'learner',
       name,
       email: email || 'yatishsathish3012@gmail.com',
       role,

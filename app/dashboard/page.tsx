@@ -6,6 +6,8 @@ import { Footer } from '@/components/layout/Footer';
 import { AdaptiveHeader } from '@/components/dashboard/AdaptiveHeader';
 import { VideoCard } from '@/components/dashboard/VideoCard';
 import { GitHubStreakHeatmap } from '@/components/streaks/GitHubStreakHeatmap';
+import { StudySessionTracker } from '@/components/streaks/StudySessionTracker';
+import { StreakLeaderboardModal } from '@/components/social/StreakLeaderboardModal';
 import { YasseAiWidget } from '@/components/ai-assistant/YasseAiWidget';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { PwaInstallPrompt } from '@/components/ui/PwaInstallPrompt';
@@ -13,7 +15,7 @@ import { PwaUpdateNotification } from '@/components/ui/PwaUpdateNotification';
 import { EducationalGamesModal } from '@/components/games/EducationalGamesModal';
 import { useYasseStore } from '@/lib/store';
 import { GradeLevel } from '@/lib/types';
-import { Search, BookOpen, ShieldCheck, Flame, HelpCircle, CheckCircle2, Compass, Sparkles, Award, Gamepad2, Info } from 'lucide-react';
+import { Search, BookOpen, ShieldCheck, Flame, HelpCircle, CheckCircle2, Compass, Sparkles, Award, Gamepad2, Info, Trophy, Users } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -21,6 +23,7 @@ export default function DashboardPage() {
   const [selectedSubject, setSelectedSubject] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showGamesModal, setShowGamesModal] = useState(false);
+  const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
 
   if (!isLoaded) return null;
 
@@ -80,27 +83,54 @@ export default function DashboardPage() {
         {/* Adaptive Dynamic Header */}
         <AdaptiveHeader user={user} vibeCategory={vibeCategory} />
 
-        {/* Educational Mini-Games Banner Trigger */}
-        <div className="p-5 rounded-3xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-slate-950 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl border border-amber-300/30">
-          <div className="flex items-center gap-3 text-center sm:text-left">
-            <div className="p-3 rounded-2xl bg-slate-950 text-amber-400 shrink-0">
-              <Gamepad2 size={28} />
+        {/* 30-Minute Time-Gated Active Study Session Tracker */}
+        <StudySessionTracker onUnlockStreak={handleRewardGameXP} />
+
+        {/* Educational Mini-Games Banner & Leaderboard Trigger Bar */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-5 rounded-3xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-slate-950 flex items-center justify-between gap-3 shadow-xl border border-amber-300/30">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-2xl bg-slate-950 text-amber-400 shrink-0">
+                <Gamepad2 size={24} />
+              </div>
+              <div>
+                <h3 className="font-black text-base text-slate-950">Educational Mini-Games 🎮</h3>
+                <p className="text-xs font-bold text-slate-900 opacity-90">
+                  Math Sprint & Science Match (+100 XP)
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-black text-lg text-slate-950">Educational Mini-Games Hub 🎮🧮</h3>
-              <p className="text-xs font-bold text-slate-900 opacity-90">
-                Play Math Sprint & Science Match to earn Brain Synapse XP (+100 XP) and extend your streak!
-              </p>
-            </div>
+
+            <button
+              onClick={() => setShowGamesModal(true)}
+              className="px-4 py-2 rounded-xl bg-slate-950 hover:bg-slate-900 text-amber-400 font-extrabold text-xs shadow-md shrink-0"
+            >
+              Play Games →
+            </button>
           </div>
 
-          <button
-            onClick={() => setShowGamesModal(true)}
-            className="px-5 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-900 text-amber-400 font-extrabold text-xs shadow-md transition-transform active:scale-95 shrink-0 flex items-center gap-1.5"
-          >
-            <Sparkles size={16} className="text-amber-300" />
-            <span>Play Mini-Games →</span>
-          </button>
+          {/* Leaderboard & Peer Network Card */}
+          <div className="p-5 rounded-3xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white flex items-center justify-between gap-3 shadow-xl border border-purple-400/30">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-2xl bg-slate-950 text-cyan-400 shrink-0">
+                <Trophy size={24} />
+              </div>
+              <div>
+                <h3 className="font-black text-base text-white">Global Leaderboard & Friends 🏆</h3>
+                <p className="text-xs text-purple-100 opacity-90">
+                  Rank peer daily streaks & connect with friends
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowLeaderboardModal(true)}
+              className="px-4 py-2 rounded-xl bg-white text-purple-950 hover:bg-slate-100 font-black text-xs shadow-md shrink-0 flex items-center gap-1"
+            >
+              <Users size={14} />
+              <span>Leaderboard →</span>
+            </button>
+          </div>
         </div>
 
         {/* Course Subject Hubs Bar */}
@@ -160,7 +190,7 @@ export default function DashboardPage() {
 
             <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold bg-emerald-950/40 px-3 py-1 rounded-full border border-emerald-500/30">
               <CheckCircle2 size={14} />
-              <span>Developer Approvals: yatishsathish3012@gmail.com</span>
+              <span>Approvals: yatishsathish3012@gmail.com</span>
             </div>
           </div>
 
@@ -262,6 +292,13 @@ export default function DashboardPage() {
         isOpen={showGamesModal}
         onClose={() => setShowGamesModal(false)}
         onRewardXP={handleRewardGameXP}
+      />
+
+      {/* Global Streak Leaderboard & Friends Modal */}
+      <StreakLeaderboardModal
+        isOpen={showLeaderboardModal}
+        onClose={() => setShowLeaderboardModal(false)}
+        currentUsername={user?.username || 'learner'}
       />
 
       {/* Enterprise PWA App Components */}

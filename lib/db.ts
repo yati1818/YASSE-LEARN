@@ -1,8 +1,9 @@
 import { VideoLecture, DoubtItem, UserProfile } from './types';
 
-// Server-side persistent database store (1 Mobile = 1 Unique Account)
+// Server-side persistent database store (1 Mobile = 1 Account & Unique Usernames)
 interface RegisteredUserRecord {
   mobileNumber: string;
+  username: string;
   pin: string;
   profile: UserProfile;
 }
@@ -10,6 +11,7 @@ interface RegisteredUserRecord {
 interface ServerDbStore {
   otps: Map<string, { otp: string; expiresAt: number }>;
   users: Map<string, RegisteredUserRecord>;
+  usernames: Set<string>;
   videos: VideoLecture[];
   doubts: DoubtItem[];
 }
@@ -20,6 +22,7 @@ if (!globalDb.__yasse_server_db) {
   globalDb.__yasse_server_db = {
     otps: new Map(),
     users: new Map(),
+    usernames: new Set(),
     videos: [],
     doubts: [],
   };
@@ -28,7 +31,7 @@ if (!globalDb.__yasse_server_db) {
 export const serverDb = globalDb.__yasse_server_db;
 
 export function setServerOtp(mobileNumber: string, otp: string) {
-  const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes expiration
+  const expiresAt = Date.now() + 5 * 60 * 1000;
   serverDb.otps.set(mobileNumber, { otp, expiresAt });
 }
 
@@ -51,9 +54,13 @@ export function verifyServerOtp(mobileNumber: string, userOtp: string): { succes
   return { success: true };
 }
 
-// 1 Mobile Number = 1 Unique Account Engine
+// 1 Mobile Number = 1 Unique Account & Unique Username Engine
 export function checkMobileExists(mobileNumber: string): boolean {
   return serverDb.users.has(mobileNumber);
+}
+
+export function checkUsernameExists(username: string): boolean {
+  return serverDb.usernames.has(username.toLowerCase());
 }
 
 export function registerUserAccount(mobileNumber: string, pin: string, profile: UserProfile): { success: boolean; error?: string } {
@@ -61,7 +68,13 @@ export function registerUserAccount(mobileNumber: string, pin: string, profile: 
     return { success: false, error: 'This mobile number is already registered. Please log in.' };
   }
 
-  serverDb.users.set(mobileNumber, { mobileNumber, pin, profile });
+  const cleanUsername = profile.username.toLowerCase();
+  if (serverDb.usernames.has(cleanUsername)) {
+    return { success: false, error: `Username @${profile.username} is already taken. Please choose another.` };
+  }
+
+  serverDb.users.set(mobileNumber, { mobileNumber, username: cleanUsername, pin, profile });
+  serverDb.usernames.add(cleanUsername);
   return { success: true };
 }
 
@@ -76,17 +89,4 @@ export function loginUserAccount(mobileNumber: string, pin: string): { success: 
   }
 
   return { success: true, user: record.profile };
-}
-
-// UTC Clock-Synchronized Streak Engine (Strictly +1 per UTC Calendar Day)
-export function calculateUtcStreak(calendarLogs: string[], lastWatchDate: string): { newLogs: string[]; newStreakDays: number; isIncremented: boolean } {
-  const utcToday = new Date().toISOString().split('T')[0]; // YYYY-MM-DD UTC
-  
-  if (lastWatchDate === utcToday) {
-    // Already logged today; +0 increment
-    return { newLogs: calendarLogs, newStreakDays: calendarLogs.length, isIncremented: false };
-  }
-
-  const updatedLogs = Array.from(new Set([...calendarLogs, utcToday]));
-  return { newLogs: updatedLogs, newStreakDays: updatedLogs.length, isIncremented: true };
 }

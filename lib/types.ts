@@ -20,6 +20,7 @@ export interface UserPrivacySettings {
 
 export interface UserProfile {
   id: string;
+  username: string;
   name: string;
   email: string;
   role: UserRole;
@@ -37,6 +38,9 @@ export interface UserProfile {
   privateMobileNumber?: string;
   teacherMobileVerified?: boolean;
   aiPersonaPreference?: 'male' | 'female';
+  studySecondsToday?: number;
+  friends?: string[];
+  friendRequests?: string[];
   createdAt: string;
 }
 
