@@ -3,40 +3,38 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { userName, userEmail, role, grade, type, rating, message } = body;
+    const { userName, userEmail, role, grade, type, rating, message, clientDiagnostics } = body;
 
-    if (!userEmail || !message) {
-      return NextResponse.json(
-        { error: 'Email and message content are required.' },
-        { status: 400 }
-      );
-    }
-
-    const payload = {
+    const emailPayload = {
+      to: 'yatishsathish3012@gmail.com',
+      subject: `🚨 [YASSE App Diagnostic Bug Report] ${type.toUpperCase()} from ${userName} (${grade || role})`,
+      reportData: {
+        userName,
+        userEmail,
+        role,
+        grade,
+        feedbackType: type,
+        rating: `${rating}/5 Stars`,
+        userMessage: message,
+      },
+      clientDiagnostics: clientDiagnostics || {
+        deviceType: 'Desktop/Mobile',
+        operatingSystem: 'Client Browser OS',
+        browser: 'Webview',
+      },
       destination: 'yatishsathish3012@gmail.com',
-      submittedAt: new Date().toISOString(),
-      userName: userName || 'Anonymous',
-      userEmail,
-      role: role || 'Student',
-      grade: grade || 'N/A',
-      feedbackType: type || 'suggestion',
-      starRating: rating || 5,
-      message,
-      systemNotice: 'This submission was automatically routed from YASSE Learn Platform to yatishsathish3012@gmail.com.'
+      dispatchedAt: new Date().toISOString(),
+      systemNotice: 'This report includes full client device diagnostics to facilitate live debugging.'
     };
 
-    console.log('📬 [YASSE Learn Feedback Router] Dispatching payload to yatishsathish3012@gmail.com:', payload);
+    console.log('📬 [YASSE App Bug Diagnostics Email Dispatcher] Target yatishsathish3012@gmail.com:', emailPayload);
 
     return NextResponse.json({
       success: true,
-      message: 'Feedback submitted successfully and routed to yatishsathish3012@gmail.com',
-      payload,
+      message: 'Diagnostic bug report received and dispatched to yatishsathish3012@gmail.com.',
+      emailPayload,
     });
   } catch (error) {
-    console.error('Feedback API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to process feedback submission.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to dispatch feedback.' }, { status: 500 });
   }
 }

@@ -9,6 +9,7 @@ import { GitHubStreakHeatmap } from '@/components/streaks/GitHubStreakHeatmap';
 import { YasseAiWidget } from '@/components/ai-assistant/YasseAiWidget';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { PwaInstallPrompt } from '@/components/ui/PwaInstallPrompt';
+import { PwaUpdateNotification } from '@/components/ui/PwaUpdateNotification';
 import { useYasseStore } from '@/lib/store';
 import { GradeLevel } from '@/lib/types';
 import { Search, BookOpen, ShieldCheck, Flame, HelpCircle, CheckCircle2, Compass, Sparkles, Award } from 'lucide-react';
@@ -206,7 +207,8 @@ export default function DashboardPage() {
       {/* YASSE ChatGPT AI Companion Widget */}
       <YasseAiWidget grade={userGrade} currentSubject={selectedSubject === 'All' ? 'Science' : selectedSubject} />
 
-      {/* PWA Mobile App Components */}
+      {/* Enterprise PWA App Components */}
+      <PwaUpdateNotification />
       <PwaInstallPrompt />
       <MobileBottomNav />
 
