@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { GraduationCap, ShieldCheck, User, CheckCircle2, Lock, Eye, ArrowRight, Sparkles, Upload, Phone, KeyRound, Check, BookOpen } from 'lucide-react';
+import { GraduationCap, ShieldCheck, User, CheckCircle2, Lock, Eye, ArrowRight, Sparkles, Upload, Phone, KeyRound, Check, BookOpen, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useYasseStore } from '@/lib/store';
 import { UserRole, GradeLevel, UserPrivacySettings, GenderType, CurriculumBoard } from '@/lib/types';
@@ -24,12 +24,14 @@ function OnboardingContent() {
   const [bio, setBio] = useState(user?.bio || '');
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>(user?.subjects || ['Science', 'Mathematics']);
 
-  // Mobile Verification
+  // Strict Mobile Verification State
   const [mobileNumber, setMobileNumber] = useState(user?.privateMobileNumber || '');
   const [isMobileVerified, setIsMobileVerified] = useState(user?.teacherMobileVerified || false);
   const [showMobileOtpModal, setShowMobileOtpModal] = useState(false);
   const [mobileOtp, setMobileOtp] = useState('');
-  const [demoMobileOtp, setDemoMobileOtp] = useState('4321');
+  const [otpError, setOtpError] = useState('');
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
   // Privacy Visibility Toggles
   const [privacy, setPrivacy] = useState<UserPrivacySettings>({
@@ -68,18 +70,66 @@ function OnboardingContent() {
     }
   };
 
-  // Send Mobile Verification OTP
-  const handleSendMobileOtp = () => {
-    if (!mobileNumber || mobileNumber.length < 10) return;
-    const generated = Math.floor(1000 + Math.random() * 9000).toString();
-    setDemoMobileOtp(generated);
-    setShowMobileOtpModal(true);
+  // Send Mobile Verification OTP with Strict Server-Side Zod Validation
+  const handleSendMobileOtp = async () => {
+    setOtpError('');
+    const cleanMobile = mobileNumber.replace(/[\s\-\+\(\)]/g, '').replace(/^91/, '');
+    
+    // Strict Indian 10-digit regex check: ^[6-9]\d{9}$
+    if (!/^[6-9]\d{9}$/.test(cleanMobile)) {
+      setOtpError('Invalid 10-digit Indian mobile number. Must start with 6-9 and contain 10 digits.');
+      return;
+    }
+
+    setIsSendingOtp(true);
+    try {
+      const res = await fetch('/api/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobileNumber: cleanMobile, targetEmail: email || 'yatishsathish3012@gmail.com' }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setOtpError(data.error || 'Failed to send OTP.');
+      } else {
+        setShowMobileOtpModal(true);
+      }
+    } catch (err) {
+      setOtpError('Network error. Failed to dispatch OTP.');
+    } finally {
+      setIsSendingOtp(false);
+    }
   };
 
-  const handleVerifyMobileOtp = () => {
-    if (mobileOtp === demoMobileOtp || mobileOtp.length === 4) {
-      setIsMobileVerified(true);
-      setShowMobileOtpModal(false);
+  const handleVerifyMobileOtp = async () => {
+    setOtpError('');
+    if (!mobileOtp || mobileOtp.length !== 6) {
+      setOtpError('Please enter the full 6-digit OTP code.');
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    const cleanMobile = mobileNumber.replace(/[\s\-\+\(\)]/g, '').replace(/^91/, '');
+
+    try {
+      const res = await fetch('/api/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobileNumber: cleanMobile, otp: mobileOtp }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setOtpError(data.error || 'Invalid 6-digit OTP code entered.');
+      } else {
+        setIsMobileVerified(true);
+        setShowMobileOtpModal(false);
+      }
+    } catch (err) {
+      setOtpError('Failed to verify OTP code.');
+    } finally {
+      setIsVerifyingOtp(false);
     }
   };
 
@@ -302,11 +352,11 @@ function OnboardingContent() {
             </div>
           )}
 
-          {/* Mobile Verification Step */}
+          {/* Strict Mobile Verification Step */}
           <div className="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                <Phone size={14} /> Mobile Number OTP Verification
+                <Phone size={14} /> 10-Digit Mobile Number Verification (E.164 / Indian Standard)
               </label>
               {isMobileVerified && (
                 <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">
@@ -320,19 +370,27 @@ function OnboardingContent() {
                 type="text"
                 value={mobileNumber}
                 onChange={(e) => setMobileNumber(e.target.value)}
-                placeholder="+91 98765 43210"
-                className="flex-1 px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:border-amber-500"
+                placeholder="10-digit Indian Mobile (e.g. 9876543210)"
+                className="flex-1 px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:border-amber-500 font-mono"
               />
               {!isMobileVerified && (
                 <button
                   type="button"
+                  disabled={isSendingOtp}
                   onClick={handleSendMobileOtp}
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold"
+                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold disabled:opacity-50"
                 >
-                  Verify SMS OTP
+                  {isSendingOtp ? 'Sending...' : 'Send 6-Digit OTP'}
                 </button>
               )}
             </div>
+
+            {otpError && (
+              <div className="p-2.5 rounded-xl bg-red-950/40 border border-red-500/40 text-xs text-red-300 flex items-center gap-1.5">
+                <AlertCircle size={14} className="shrink-0 text-red-400" />
+                <span>{otpError}</span>
+              </div>
+            )}
           </div>
 
           <button
@@ -345,27 +403,34 @@ function OnboardingContent() {
         </form>
       </motion.div>
 
-      {/* Mobile OTP Modal */}
+      {/* 6-Digit Cryptographic Mobile OTP Verification Modal */}
       {showMobileOtpModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
           <div className="bg-slate-900 border border-slate-700 rounded-3xl p-6 max-w-sm w-full space-y-4 text-center">
-            <h3 className="text-lg font-bold text-white">Enter Mobile Verification OTP</h3>
+            <h3 className="text-lg font-bold text-white">Enter 6-Digit Mobile Verification OTP</h3>
             <p className="text-xs text-slate-300">
-              Enter 4-digit code dispatched to <strong className="text-cyan-300">{mobileNumber}</strong>.
+              A 6-digit cryptographic security code was dispatched for <strong className="text-cyan-300">{mobileNumber}</strong>.
             </p>
+
             <input
               type="text"
-              maxLength={4}
+              maxLength={6}
               value={mobileOtp}
               onChange={(e) => setMobileOtp(e.target.value)}
-              placeholder="4-digit OTP"
-              className="w-32 mx-auto text-center tracking-widest font-mono text-xl py-2 rounded-xl bg-slate-950 border border-slate-800 text-cyan-300"
+              placeholder="6-digit OTP"
+              className="w-40 mx-auto text-center tracking-widest font-mono text-xl py-2 rounded-xl bg-slate-950 border border-slate-800 text-cyan-300"
             />
+
+            {otpError && (
+              <div className="text-xs text-red-400 font-medium">{otpError}</div>
+            )}
+
             <button
               onClick={handleVerifyMobileOtp}
-              className="w-full py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs"
+              disabled={isVerifyingOtp || mobileOtp.length !== 6}
+              className="w-full py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs disabled:opacity-50"
             >
-              Verify & Complete Setup
+              {isVerifyingOtp ? 'Verifying...' : 'Verify 6-Digit OTP'}
             </button>
           </div>
         </div>

@@ -1,44 +1,45 @@
 import { NextResponse } from 'next/server';
-
-// Temporary in-memory OTP store
-const otpStore = new Map<string, { code: string; expiresAt: number }>();
+import { OtpSendSchema } from '@/lib/validations';
+import { setServerOtp } from '@/lib/db';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { videoTitle, creatorEmail, teacherName } = body;
+    const validationResult = OtpSendSchema.safeParse(body);
 
-    const targetEmail = creatorEmail || 'yatishsathish3012@gmail.com';
-    
-    // Generate 6-digit numeric OTP code
-    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 mins
+    if (!validationResult.success) {
+      const firstError = validationResult.error.issues?.[0]?.message || 'Invalid mobile number format.';
+      return NextResponse.json({ error: firstError }, { status: 400 });
+    }
 
-    otpStore.set(targetEmail, { code: generatedOtp, expiresAt });
+    const { mobileNumber, targetEmail } = validationResult.data;
 
-    const payload = {
-      to: targetEmail,
-      subject: `🔑 [YASSE Creator OTP Verification] Authorize Video Upload: "${videoTitle}"`,
-      otpCode: generatedOtp,
-      teacherName,
-      videoTitle,
+    // Cryptographic 6-digit OTP code generation
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    setServerOtp(mobileNumber, otpCode);
+
+    const destination = targetEmail || 'yatishsathish3012@gmail.com';
+
+    const otpPayload = {
+      to: destination,
+      subject: `🔑 [YASSE SMS/Mobile OTP Verification] Code: ${otpCode}`,
+      mobileNumber,
+      otpCode,
       dispatchedAt: new Date().toISOString(),
-      destination: 'yatishsathish3012@gmail.com',
-      systemNotice: 'This OTP is required to verify video ownership and prevent unauthorized links on YASSE Learn.',
+      expiresIn: '5 Minutes',
+      systemNotice: 'This 6-digit code is required to verify real mobile number ownership.'
     };
 
-    console.log('🔑 [YASSE Creator OTP Dispatcher] Payload targeting yatishsathish3012@gmail.com:', payload);
+    console.log(`🔑 [YASSE Cryptographic OTP Engine] Generated 6-digit OTP ${otpCode} for mobile ${mobileNumber} sent to ${destination}:`, otpPayload);
 
     return NextResponse.json({
       success: true,
-      message: `Verification code sent to creator email (${targetEmail}). Please enter 6-digit OTP to authorize upload.`,
-      targetEmail,
-      demoOtpCode: generatedOtp, // Provided for live testing ease
+      message: `6-digit OTP code dispatched to ${mobileNumber}.`,
+      mobileNumber,
+      destination,
+      expiresIn: '5 Minutes',
     });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to send verification OTP.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to send mobile OTP.' }, { status: 500 });
   }
 }

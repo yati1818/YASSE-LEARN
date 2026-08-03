@@ -1,34 +1,34 @@
 import { NextResponse } from 'next/server';
+import { OtpVerifySchema } from '@/lib/validations';
+import { verifyServerOtp } from '@/lib/db';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { otpCode, creatorEmail } = body;
+    const validationResult = OtpVerifySchema.safeParse(body);
 
-    if (!otpCode) {
-      return NextResponse.json({ error: 'OTP code is required.' }, { status: 400 });
+    if (!validationResult.success) {
+      const firstError = validationResult.error.issues?.[0]?.message || 'Invalid OTP code format.';
+      return NextResponse.json({ error: firstError }, { status: 400 });
     }
 
-    // Accept valid 6-digit numeric OTP or demo code
-    const is6Digits = /^\d{6}$/.test(otpCode);
+    const { mobileNumber, otp } = validationResult.data;
 
-    if (is6Digits) {
-      return NextResponse.json({
-        success: true,
-        verified: true,
-        message: 'Creator ownership verified successfully! Proceeding to AI video compliance inspection.',
-        verifiedAt: new Date().toISOString(),
-      });
+    const result = verifyServerOtp(mobileNumber, otp);
+
+    if (!result.success) {
+      return NextResponse.json({ error: result.error || 'Invalid 6-digit OTP entered.' }, { status: 400 });
     }
 
-    return NextResponse.json(
-      { error: 'Invalid 6-digit OTP code. Please enter a valid 6-digit code.' },
-      { status: 400 }
-    );
+    console.log(`✅ [YASSE OTP Verification] Mobile ${mobileNumber} successfully verified!`);
+
+    return NextResponse.json({
+      success: true,
+      mobileNumber,
+      isVerified: true,
+      message: 'Mobile number verified successfully.',
+    });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to verify OTP.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to verify OTP code.' }, { status: 500 });
   }
 }
