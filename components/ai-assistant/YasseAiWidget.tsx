@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, Send, X, Sparkles, BookOpen, HelpCircle, Lightbulb, UserCheck, ChevronRight } from 'lucide-react';
+import { Bot, Send, X, Sparkles, BookOpen, HelpCircle, Lightbulb, UserCheck, ChevronRight, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AiChatMessage } from '@/lib/types';
 
@@ -26,13 +26,13 @@ export const YasseAiWidget: React.FC<YasseAiWidgetProps> = ({
       id: 'm1',
       sender: 'assistant',
       persona: 'female',
-      content: `Hello! 👋 I am **Dr. Ananya**, your ChatGPT AI Study Tutor. Ask me ANY question about **${grade} ${currentSubject}** or any other subject!\n\nYou can also switch to **Prof. Aryan (Male Mentor)** at any time. What would you like to explore today?`,
+      content: `Hey there! 😊 I'm **Dr. Ananya**, your AI study buddy!\n\nWhether you want to chat casually, get quick study tips, or ask questions about **${grade} ${currentSubject}**, I'm here to hang out and help you learn. How's your day going?`,
       timestamp: 'Just now',
       suggestedTopics: [
-        'How does photosynthesis work?',
-        'Explain Ohm’s Law V = I * R with real examples',
-        'Give me a step-by-step hint for my homework problem',
-        'Summarize key formulas for Class 10 Board Exams'
+        '👋 Hey Dr. Ananya! How are you?',
+        '💡 Give me a fun study tip for today',
+        '⚡ Explain Ohm’s Law simply',
+        '😂 Tell me a funny science joke!'
       ]
     }
   ]);
@@ -53,7 +53,7 @@ export const YasseAiWidget: React.FC<YasseAiWidgetProps> = ({
       id: `system-${Date.now()}`,
       sender: 'assistant',
       persona: newGender,
-      content: `Switched AI Tutor Persona to **${mentorName}**! How can I help you with your ${grade} studies right now?`,
+      content: `Hey! I'm **${mentorName}** now! Glad to be hanging out with you. What's on your mind today?`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
@@ -75,22 +75,42 @@ export const YasseAiWidget: React.FC<YasseAiWidgetProps> = ({
     if (!textToSend) setInputMessage('');
     setIsTyping(true);
 
-    // Free-form conversational ChatGPT AI response logic
+    // Warm, casual, friendly conversational response generator
     setTimeout(() => {
-      const tutorTitle = aiGender === 'male' ? 'Prof. Aryan 👨‍🏫' : 'Dr. Ananya 👩‍🏫';
-      const promptLower = text.toLowerCase();
+      const tutorName = aiGender === 'male' ? 'Prof. Aryan' : 'Dr. Ananya';
+      const promptLower = text.toLowerCase().trim();
       let responseBody = '';
 
-      if (promptLower.includes('photosynthesis')) {
-        responseBody = `**${tutorTitle}**: Photosynthesis is the biological process by which green plants convert light energy into chemical energy.\n\n**Chemical Equation**:\n$$6CO_2 + 6H_2O \\xrightarrow{\\text{Sunlight, Chlorophyll}} C_6H_12O_6 + 6O_2$$\n\n- **Stomata**: Tiny pores on leaves that absorb Carbon Dioxide.\n- **Chlorophyll**: Green pigment inside chloroplasts capturing sunlight photons.`;
+      // Casual Greetings & Small Talk
+      if (promptLower.match(/^(hi|hello|hey|heyy|heyyy|hlo|hola|sup|wassup|yo|good morning|good afternoon|good evening)/)) {
+        responseBody = `Hey! 👋 Awesome to hear from you! How are you doing today? Ready to learn something cool or just taking a quick study break?`;
+      } else if (promptLower.includes('how are you') || promptLower.includes('how u doing') || promptLower.includes('how do you do')) {
+        responseBody = `I'm doing great, thank you for asking! 😊 Powered up and ready to help you crush your **${grade}** goals. How is your study session going so far?`;
+      } else if (promptLower.includes('who are you') || promptLower.includes('your name') || promptLower.includes('what are you')) {
+        responseBody = `I'm **${tutorName}** (${aiGender === 'male' ? 'Male AI Mentor' : 'Female AI Mentor'})—your friendly AI study companion on YASSE Learn! I'm here to chat, explain concepts, give hints, or just keep you motivated while you learn. ✨`;
+      } else if (promptLower.includes('joke') || promptLower.includes('funny')) {
+        const jokes = [
+          `Why can't you trust atoms? ...Because they make up everything! 21 😂`,
+          `Why did the spider object to the fly? ...Because it was a bug in the web! 🕸️`,
+          `Why was the math book sad? ...Because it had too many problems! 📘😄`
+        ];
+        responseBody = jokes[Math.floor(Math.random() * jokes.length)];
+      } else if (promptLower.includes('tired') || promptLower.includes('bored') || promptLower.includes('stressed') || promptLower.includes('hard')) {
+        responseBody = `I completely understand! Learning can be tough sometimes, but you're doing amazing just by showing up! 🌟 Take a deep breath, drink some water, and remember: small steps every day build big success. You've got this! 💪`;
+      } else if (promptLower.includes('thank') || promptLower.includes('thanks') || promptLower.includes('thx')) {
+        responseBody = `You're super welcome! 😄 Always happy to help. Let me know whenever you want to chat or explore another topic!`;
+      } else if (promptLower.includes('bye') || promptLower.includes('see ya') || promptLower.includes('goodnight')) {
+        responseBody = `Catch you later! 👋 Keep up the great work and have an awesome rest of your day!`;
+      } 
+      // Academic Explanations (Casual & Crystal Clear)
+      else if (promptLower.includes('photosynthesis')) {
+        responseBody = `**Photosynthesis** is basically how plants make their own food! 🌿\n\nThey take in **Sunlight + Carbon Dioxide ($CO_2$) + Water ($H_2O$)**, and use green chlorophyll in their leaves to transform it into **Glucose (Sugar) + Oxygen ($O_2$)** that we breathe!\n\n$$6CO_2 + 6H_2O \\xrightarrow{\\text{Sunlight}} C_6H_{12}O_6 + 6O_2$$`;
       } else if (promptLower.includes('ohm') || promptLower.includes('resistance') || promptLower.includes('voltage')) {
-        responseBody = `**${tutorTitle}**: **Ohm's Law** states that the current ($I$) passing through a conductor is directly proportional to potential difference ($V$) across its ends, provided temperature remains constant.\n\n$$\\text{Formula: } V = I \\times R$$\n\n- **$V$**: Voltage in Volts (V)\n- **$I$**: Current in Amperes (A)\n- **$R$**: Resistance in Ohms ($\\Omega$)\n\n*Intuition*: Think of Voltage as water pressure pushing through a pipe, and Resistance as pipe narrowness!`;
-      } else if (promptLower.includes('formula') || promptLower.includes('exam') || promptLower.includes('summary')) {
-        responseBody = `**${tutorTitle}**: Here are the top formula checkpoints for **${grade} ${currentSubject}**:\n\n1. **Ohm's Law**: $V = I R$\n2. **Series Resistance**: $R_{\\text{total}} = R_1 + R_2 + R_3$\n3. **Parallel Resistance**: $\\frac{1}{R_{\\text{eq}}} = \\frac{1}{R_1} + \\frac{1}{R_2}$\n4. **Joule's Law of Heating**: $H = I^2 R t$\n\n*Pro Tip for Exams*: Always write down Given data and check SI units first!`;
-      } else if (promptLower.includes('hint') || promptLower.includes('doubt')) {
-        responseBody = `**${tutorTitle}**: 💡 **Step-by-Step ChatGPT Hint**:\n1. Identify what parameters you are given in the problem statement.\n2. Write down the target variable you need to calculate.\n3. Match the given variables to the correct standard formula and substitute values carefully.\n\nWould you like me to work through a specific numerical step-by-step with you?`;
+        responseBody = `**Ohm's Law ($V = I \\times R$)** is like water flowing through a pipe! ⚡\n\n- **Voltage ($V$)**: The pressure pushing the water.\n- **Current ($I$)**: The amount of water flowing.\n- **Resistance ($R$)**: How narrow the pipe is!\n\nSo higher resistance slows down the current if voltage stays the same. Simple right?`;
+      } else if (promptLower.includes('tip') || promptLower.includes('study') || promptLower.includes('advice')) {
+        responseBody = `💡 **Quick Study Hack**: Try the **Pomodoro Technique**! Study focused for 25 minutes, then take a 5-minute stretch break. It keeps your brain fresh and boosts your Brain Synapse XP! 🧠⚡`;
       } else {
-        responseBody = `**${tutorTitle}**: That's a great question regarding **${text}** for **${grade} ${currentSubject}**!\n\nIn science and mathematics, breaking down complex queries into fundamental principles helps build deep conceptual clarity. \n\n- **Key Observation**: Analyze how this relates to real-world applications.\n- **Step 1**: Define your core variables.\n- **Step 2**: Apply standard laws or formulas.\n\nLet me know if you would like a deeper explanation, practice question, or formula derivation!`;
+        responseBody = `That's really interesting! Regarding **${text}**:\n\n1. **Core Idea**: Think of it in simple terms—every big concept is made of smaller, logical pieces.\n2. **Pro Tip**: Relate it to something you see around you every day!\n\nWould you like me to explain this with a fun real-world example or try a quick practice question together? 😊`;
       }
 
       const aiMsg: AiChatMessage = {
@@ -99,12 +119,12 @@ export const YasseAiWidget: React.FC<YasseAiWidgetProps> = ({
         persona: aiGender,
         content: responseBody,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        suggestedTopics: ['Explain with real-world example', 'Give me a practice problem']
+        suggestedTopics: ['Tell me more!', 'Give me a study tip']
       };
 
       setMessages(prev => [...prev, aiMsg]);
       setIsTyping(false);
-    }, 1000);
+    }, 900);
   };
 
   return (
@@ -123,7 +143,7 @@ export const YasseAiWidget: React.FC<YasseAiWidgetProps> = ({
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-400"></span>
           </span>
         </div>
-        <span className="hidden sm:inline text-sm font-extrabold tracking-wide">YASSE ChatGPT AI</span>
+        <span className="hidden sm:inline text-sm font-extrabold tracking-wide">YASSE AI Companion</span>
         <Sparkles className="w-4 h-4 text-yellow-300 group-hover:rotate-12 transition-transform" />
       </motion.button>
 
@@ -147,10 +167,10 @@ export const YasseAiWidget: React.FC<YasseAiWidgetProps> = ({
                     </div>
                     <div>
                       <h3 className="font-extrabold text-base bg-gradient-to-r from-white via-cyan-100 to-cyan-300 bg-clip-text text-transparent flex items-center gap-1.5">
-                        YASSE ChatGPT AI Tutor
+                        YASSE AI Study Companion
                       </h3>
                       <div className="text-xs text-cyan-400 font-medium">
-                        Tailored for {grade} • {currentSubject}
+                        {grade} • {currentSubject} Buddy
                       </div>
                     </div>
                   </div>
@@ -163,9 +183,9 @@ export const YasseAiWidget: React.FC<YasseAiWidgetProps> = ({
                   </button>
                 </div>
 
-                {/* Male / Female AI Tutor Selector */}
+                {/* Male / Female AI Mentor Selector */}
                 <div className="flex items-center gap-2 pt-1 border-t border-slate-800/80">
-                  <span className="text-xs font-bold text-slate-400">Select AI Mentor:</span>
+                  <span className="text-xs font-bold text-slate-400">AI Tutor Persona:</span>
                   <div className="flex-1 grid grid-cols-2 gap-1.5">
                     <button
                       onClick={() => handleGenderChange('female')}
@@ -195,7 +215,7 @@ export const YasseAiWidget: React.FC<YasseAiWidgetProps> = ({
               {currentVideoTitle && (
                 <div className="px-4 py-2 bg-slate-900/60 border-b border-slate-800/80 text-xs text-slate-300 flex items-center gap-2">
                   <BookOpen size={14} className="text-purple-400 shrink-0" />
-                  <span className="truncate">Active Video: <strong>{currentVideoTitle}</strong></span>
+                  <span className="truncate">Watching: <strong>{currentVideoTitle}</strong></span>
                 </div>
               )}
 
@@ -247,16 +267,22 @@ export const YasseAiWidget: React.FC<YasseAiWidgetProps> = ({
               {/* Quick Prompt Bar */}
               <div className="p-2 border-t border-slate-900 bg-slate-950 flex gap-2 overflow-x-auto">
                 <button 
-                  onClick={() => handleSendMessage('Summarize key formulas')}
+                  onClick={() => handleSendMessage('Hey! How are you doing today?')}
                   className="px-2.5 py-1 text-xs rounded-lg bg-slate-900 text-slate-300 border border-slate-800 hover:border-cyan-500 shrink-0 flex items-center gap-1"
                 >
-                  <Lightbulb size={12} className="text-amber-400" /> Key Formulas
+                  <MessageCircle size={12} className="text-cyan-400" /> Say Hi 👋
                 </button>
                 <button 
-                  onClick={() => handleSendMessage('Give me a step-by-step hint')}
+                  onClick={() => handleSendMessage('Give me a fun study tip')}
                   className="px-2.5 py-1 text-xs rounded-lg bg-slate-900 text-slate-300 border border-slate-800 hover:border-cyan-500 shrink-0 flex items-center gap-1"
                 >
-                  <HelpCircle size={12} className="text-cyan-400" /> Step-by-Step Hint
+                  <Lightbulb size={12} className="text-amber-400" /> Study Hack
+                </button>
+                <button 
+                  onClick={() => handleSendMessage('Tell me a funny science joke')}
+                  className="px-2.5 py-1 text-xs rounded-lg bg-slate-900 text-slate-300 border border-slate-800 hover:border-cyan-500 shrink-0 flex items-center gap-1"
+                >
+                  <Sparkles size={12} className="text-pink-400" /> Tell a Joke 😂
                 </button>
               </div>
 
@@ -267,7 +293,7 @@ export const YasseAiWidget: React.FC<YasseAiWidgetProps> = ({
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                  placeholder={`Ask ${aiGender === 'male' ? 'Prof. Aryan' : 'Dr. Ananya'} any question...`}
+                  placeholder={`Chat casually with ${aiGender === 'male' ? 'Prof. Aryan' : 'Dr. Ananya'}...`}
                   className="flex-1 px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500 transition-colors"
                 />
                 <button
