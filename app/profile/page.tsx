@@ -95,7 +95,7 @@ export default function ProfilePage() {
               )}
 
               <div className="pt-2 flex flex-wrap gap-1.5 justify-center sm:justify-start">
-                {user.subjects.map((sub) => (
+                {(user.subjects || []).map((sub) => (
                   <span key={sub} className="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 text-[11px] font-semibold border border-slate-700">
                     {sub}
                   </span>

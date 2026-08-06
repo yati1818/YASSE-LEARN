@@ -11,8 +11,10 @@ export interface UserProfile {
   email?: string;
   bio?: string;
   role: UserRole;
+  gender?: string;
   grade: string;
   board: BoardType;
+  subjects?: string[];
   mobileNumber: string;
   privateMobileNumber?: string;
   teacherMobileVerified?: boolean;
