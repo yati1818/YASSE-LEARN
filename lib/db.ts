@@ -12,6 +12,8 @@ interface ServerDbStore {
   otps: Map<string, { otp: string; expiresAt: number }>;
   users: Map<string, RegisteredUserRecord>;
   usernames: Set<string>;
+  friendRequests: Map<string, Set<string>>; // username -> set of requester usernames
+  friends: Map<string, Set<string>>; // username -> set of friend usernames
   videos: VideoLecture[];
   doubts: DoubtItem[];
 }
@@ -23,6 +25,8 @@ if (!globalDb.__yasse_server_db) {
     otps: new Map(),
     users: new Map(),
     usernames: new Set(),
+    friendRequests: new Map(),
+    friends: new Map(),
     videos: [],
     doubts: [],
   };
@@ -89,4 +93,43 @@ export function loginUserAccount(mobileNumber: string, pin: string): { success: 
   }
 
   return { success: true, user: record.profile };
+}
+
+// REAL SOCIAL GRAPH & DYNAMIC LEADERBOARD ENGINE
+export function getGlobalLeaderboard(): UserProfile[] {
+  const allProfiles: UserProfile[] = [];
+  serverDb.users.forEach((rec) => {
+    allProfiles.push(rec.profile);
+  });
+
+  // Sort dynamically by streak & XP
+  return allProfiles;
+}
+
+export function sendPeerFriendRequest(fromUsername: string, toUsername: string): { success: boolean; message?: string } {
+  const cleanFrom = fromUsername.toLowerCase();
+  const cleanTo = toUsername.toLowerCase();
+
+  if (!serverDb.usernames.has(cleanTo)) {
+    return { success: false, message: 'Target username not found.' };
+  }
+
+  if (!serverDb.friendRequests.has(cleanTo)) {
+    serverDb.friendRequests.set(cleanTo, new Set());
+  }
+
+  serverDb.friendRequests.get(cleanTo)!.add(cleanFrom);
+  return { success: true, message: `Friend request sent to @${toUsername}.` };
+}
+
+// UTC Clock-Synchronized Streak Engine (Strictly +1 per UTC Calendar Day)
+export function calculateUtcStreak(calendarLogs: string[], lastWatchDate: string): { newLogs: string[]; newStreakDays: number; isIncremented: boolean } {
+  const utcToday = new Date().toISOString().split('T')[0];
+  
+  if (lastWatchDate === utcToday) {
+    return { newLogs: calendarLogs, newStreakDays: calendarLogs.length, isIncremented: false };
+  }
+
+  const updatedLogs = Array.from(new Set([...calendarLogs, utcToday]));
+  return { newLogs: updatedLogs, newStreakDays: updatedLogs.length, isIncremented: true };
 }

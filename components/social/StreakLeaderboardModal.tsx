@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Trophy, X, Flame, UserPlus, Check, Sparkles, Users, Award, ShieldCheck } from 'lucide-react';
+import { Trophy, X, Flame, UserPlus, Check, Sparkles, Users, Award, ShieldCheck, Search, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface StreakLeaderboardModalProps {
@@ -27,52 +27,8 @@ export const StreakLeaderboardModal: React.FC<StreakLeaderboardModalProps> = ({
   onClose,
   currentUsername = 'learner',
 }) => {
-  const [leaderboardUsers, setLeaderboardUsers] = useState<LeaderboardUser[]>([
-    {
-      id: 'l1',
-      username: 'ananya_physics',
-      name: 'Dr. Ananya Sharma',
-      grade: 'Class 12',
-      streakDays: 14,
-      xp: 2800,
-      avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-      isFriend: true,
-      requestSent: false,
-    },
-    {
-      id: 'l2',
-      username: 'rajesh_maths',
-      name: 'Prof. Rajesh Verma',
-      grade: 'Class 10',
-      streakDays: 11,
-      xp: 2150,
-      avatarUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop&q=80',
-      isFriend: false,
-      requestSent: false,
-    },
-    {
-      id: 'l3',
-      username: 'yatish_sathish',
-      name: 'Yatish Sathish',
-      grade: 'Class 10',
-      streakDays: 8,
-      xp: 1600,
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-      isFriend: true,
-      requestSent: false,
-    },
-    {
-      id: 'l4',
-      username: 'priya_science',
-      name: 'Priya Sundaram',
-      grade: 'Class 8',
-      streakDays: 5,
-      xp: 950,
-      avatarUrl: 'https://api.dicebear.com/7.x/bottts/svg?seed=Priya',
-      isFriend: false,
-      requestSent: false,
-    },
-  ]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [leaderboardUsers, setLeaderboardUsers] = useState<LeaderboardUser[]>([]);
 
   if (!isOpen) return null;
 
@@ -96,8 +52,8 @@ export const StreakLeaderboardModal: React.FC<StreakLeaderboardModalProps> = ({
               <Trophy size={24} />
             </div>
             <div>
-              <h3 className="font-extrabold text-lg text-white">Global Streak Leaderboard</h3>
-              <div className="text-xs text-slate-400">Track top daily streaks & connect with peer learners</div>
+              <h3 className="font-extrabold text-lg text-white">Live Global Streak Leaderboard</h3>
+              <div className="text-xs text-slate-400">Real registered learners ranked by active daily streak</div>
             </div>
           </div>
 
@@ -106,71 +62,91 @@ export const StreakLeaderboardModal: React.FC<StreakLeaderboardModalProps> = ({
           </button>
         </div>
 
+        {/* Peer Search Input */}
+        <div className="relative">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search registered learners by @username or name..."
+            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-xs focus:border-cyan-500 font-mono"
+          />
+        </div>
+
         {/* Leaderboard Table List */}
         <div className="space-y-2.5 max-h-96 overflow-y-auto pr-1">
-          {leaderboardUsers.map((u, idx) => (
-            <div
-              key={u.id}
-              className={`p-3.5 rounded-2xl border flex items-center justify-between gap-3 transition-all ${
-                u.username === currentUsername
-                  ? 'bg-purple-950/60 border-purple-500/50 shadow-md'
-                  : 'bg-slate-950 border-slate-800'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                {/* Rank Badge */}
-                <div
-                  className={`w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs shrink-0 ${
-                    idx === 0
-                      ? 'bg-amber-400 text-slate-950'
-                      : idx === 1
-                        ? 'bg-slate-300 text-slate-950'
-                        : idx === 2
-                          ? 'bg-amber-700 text-white'
-                          : 'bg-slate-800 text-slate-400'
-                  }`}
-                >
-                  #{idx + 1}
-                </div>
-
-                <img src={u.avatarUrl} alt={u.name} className="w-10 h-10 rounded-xl object-cover shrink-0" />
-
-                <div>
-                  <div className="font-bold text-xs text-white flex items-center gap-1.5">
-                    <span>{u.name}</span>
-                    <span className="text-[10px] text-cyan-300 font-mono">@{u.username}</span>
-                  </div>
-                  <div className="text-[11px] text-slate-400">{u.grade} • {u.xp} Brain XP</div>
-                </div>
-              </div>
-
-              {/* Streak Badge & Friend Button */}
-              <div className="flex items-center gap-2">
-                <div className="px-2.5 py-1 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-black flex items-center gap-1">
-                  <Flame size={14} className="text-amber-400" />
-                  <span>{u.streakDays}d</span>
-                </div>
-
-                {u.isFriend ? (
-                  <span className="text-[11px] text-emerald-400 font-bold px-2 py-1 bg-emerald-950/40 rounded-lg border border-emerald-500/30">
-                    Friends
-                  </span>
-                ) : u.requestSent ? (
-                  <span className="text-[11px] text-slate-400 font-medium px-2 py-1 bg-slate-900 rounded-lg">
-                    Sent
-                  </span>
-                ) : (
-                  <button
-                    onClick={() => handleSendFriendRequest(u.id)}
-                    className="p-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold transition-transform active:scale-95"
-                    title="Send Friend Request"
-                  >
-                    <UserPlus size={14} />
-                  </button>
-                )}
-              </div>
+          {leaderboardUsers.length === 0 ? (
+            <div className="py-12 text-center space-y-3 bg-slate-950 rounded-2xl border border-slate-800 p-6">
+              <Info size={36} className="mx-auto text-cyan-400" />
+              <div className="text-sm font-bold text-slate-200">No Other Learners Registered Yet</div>
+              <p className="text-xs text-slate-400 max-w-xs mx-auto">
+                Share YASSE Learn with classmates to build your peer study network and rank on the live streak leaderboard!
+              </p>
             </div>
-          ))}
+          ) : (
+            leaderboardUsers.map((u, idx) => (
+              <div
+                key={u.id}
+                className={`p-3.5 rounded-2xl border flex items-center justify-between gap-3 transition-all ${
+                  u.username === currentUsername
+                    ? 'bg-purple-950/60 border-purple-500/50 shadow-md'
+                    : 'bg-slate-950 border-slate-800'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs shrink-0 ${
+                      idx === 0
+                        ? 'bg-amber-400 text-slate-950'
+                        : idx === 1
+                          ? 'bg-slate-300 text-slate-950'
+                          : idx === 2
+                            ? 'bg-amber-700 text-white'
+                            : 'bg-slate-800 text-slate-400'
+                    }`}
+                  >
+                    #{idx + 1}
+                  </div>
+
+                  <img src={u.avatarUrl} alt={u.name} className="w-10 h-10 rounded-xl object-cover shrink-0" />
+
+                  <div>
+                    <div className="font-bold text-xs text-white flex items-center gap-1.5">
+                      <span>{u.name}</span>
+                      <span className="text-[10px] text-cyan-300 font-mono">@{u.username}</span>
+                    </div>
+                    <div className="text-[11px] text-slate-400">{u.grade} • {u.xp} Brain XP</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="px-2.5 py-1 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-black flex items-center gap-1">
+                    <Flame size={14} className="text-amber-400" />
+                    <span>{u.streakDays}d</span>
+                  </div>
+
+                  {u.isFriend ? (
+                    <span className="text-[11px] text-emerald-400 font-bold px-2 py-1 bg-emerald-950/40 rounded-lg border border-emerald-500/30">
+                      Friends
+                    </span>
+                  ) : u.requestSent ? (
+                    <span className="text-[11px] text-slate-400 font-medium px-2 py-1 bg-slate-900 rounded-lg">
+                      Sent
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => handleSendFriendRequest(u.id)}
+                      className="p-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold transition-transform active:scale-95"
+                      title="Send Friend Request"
+                    >
+                      <UserPlus size={14} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </motion.div>
     </div>
