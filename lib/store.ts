@@ -172,6 +172,7 @@ export function useYasseStore() {
   return {
     user,
     saveUser,
+    login: saveUser,
     videos,
     addVideo,
     approveVideo,
