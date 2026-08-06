@@ -1,138 +1,75 @@
-export type UserRole = 'student' | 'teacher' | 'admin';
-
-export type GradeLevel = 
-  | 'Class 3' | 'Class 4' | 'Class 5'
-  | 'Class 6' | 'Class 7' | 'Class 8'
-  | 'Class 9' | 'Class 10' | 'Class 11' | 'Class 12';
-
-export type VibeCategory = 'junior' | 'middle' | 'senior';
-
-export type GenderType = 'male' | 'female' | 'other';
-
-export type CurriculumBoard = 'CBSE' | 'ICSE' | 'State Board' | 'International';
-
-export interface UserPrivacySettings {
-  isProfilePublic: boolean;
-  showStreaks: boolean;
-  showBadges: boolean;
-  showDoubtsCount: boolean;
-}
+export type UserRole = 'student' | 'teacher';
+export type BoardType = 'CBSE' | 'ICSE' | 'State Board' | 'International';
 
 export interface UserProfile {
   id: string;
-  username: string;
+  username: string; // unique handle e.g. "yashwardhan"
+  playerId: string; // unique gamer tag e.g. "#YASSE-9344"
   name: string;
-  email: string;
   role: UserRole;
-  avatarUrl: string;
-  gender?: GenderType;
-  board?: CurriculumBoard;
-  googleSynced?: boolean;
-  grade?: GradeLevel;
-  subjects: string[];
-  bio?: string;
-  privacy: UserPrivacySettings;
-  teacherVerified?: boolean;
-  teacherRating?: number;
-  teacherQualification?: string;
-  privateMobileNumber?: string;
-  teacherMobileVerified?: boolean;
-  aiPersonaPreference?: 'male' | 'female';
-  studySecondsToday?: number;
-  friends?: string[];
-  friendRequests?: string[];
+  grade: string;
+  board: BoardType;
+  mobileNumber: string;
+  streakDays: number;
+  xp: number;
+  streakCalendarLogs: string[];
+  lastWatchDate: string;
+  completedLectures: string[];
+  quizScores: Record<string, number>;
+  bookmarkedVideoIds: string[];
+  studySecondsToday: number;
+  friends: string[]; // array of usernames/playerIds
+  friendRequests: string[]; // array of requester handles
+}
+
+export interface VideoLecture {
+  id: string;
+  title: string;
+  description: string;
+  grade: string;
+  subject: string;
+  chapter: string;
+  youtubeUrl: string;
+  teacherName: string;
+  teacherId: string;
+  teacherAvatarUrl?: string;
+  durationMinutes: number;
+  isVerified: boolean;
+  status: 'pending_ai_review' | 'pending_admin_approval' | 'published' | 'rejected';
+  approvalToken?: string;
   createdAt: string;
+  quiz?: QuizQuestion[];
 }
 
 export interface QuizQuestion {
   id: string;
   question: string;
   options: string[];
-  correctAnswerIndex: number;
+  correctOptionIndex: number;
   explanation: string;
 }
 
-export interface AiNoteItem {
-  title: string;
-  text: string;
-}
-
-export type ApprovalStatus = 'pending_admin_approval' | 'approved' | 'rejected';
-
-export interface VideoLecture {
+export interface TeacherProfile {
   id: string;
-  title: string;
-  description: string;
-  grade: GradeLevel;
-  subject: string;
-  teacherId: string;
-  teacherName: string;
-  teacherAvatar: string;
-  teacherVerified: boolean;
-  videoType: 'youtube' | 'uploaded_file';
-  videoUrl: string;
-  embedUrl: string;
-  thumbnailUrl: string;
-  durationMinutes: number;
-  viewsCount: number;
-  isAiVerified: boolean;
-  aiVerificationScore: number;
-  aiComplianceSummary: string;
-  transcript: string;
-  creatorOtpVerified: boolean;
-  approvalStatus: ApprovalStatus;
-  adminApproverEmail: string;
-  aiNotes: AiNoteItem[];
-  aiQuizQuestions: QuizQuestion[];
-  createdAt: string;
+  name: string;
+  username: string;
+  playerId: string;
+  qualification: string;
+  subjectSpecialization: string;
+  avatarUrl: string;
+  verifiedBadge: boolean;
+  publishedCount: number;
 }
 
 export interface DoubtItem {
   id: string;
-  videoId: string;
-  videoTitle: string;
-  studentId: string;
   studentName: string;
-  studentGrade: GradeLevel;
-  teacherId: string;
-  teacherEmail: string;
-  timestampInVideo?: string;
+  studentGrade: string;
+  questionText: string;
   subject: string;
-  questionTitle: string;
-  questionDetails: string;
-  urgency: 'low' | 'medium' | 'high';
-  status: 'pending' | 'answered';
-  answerText?: string;
   createdAt: string;
-}
-
-export interface StreakData {
-  videoStreakDays: number;
-  lastVideoWatchDate: string;
-  brainStreakDays: number;
-  lastBrainActivityDate: string;
-  totalXP: number;
-  calendarLogs: string[];
-  badgesUnlocked: {
-    id: string;
-    title: string;
-    icon: string;
-    unlockedAt: string;
-    description: string;
-  }[];
-}
-
-export interface FeedbackSubmission {
-  id: string;
-  userName: string;
-  userEmail: string;
-  role: UserRole;
-  grade?: string;
-  type: 'suggestion' | 'bug' | 'feature_request' | 'general';
-  rating: number;
-  message: string;
-  submittedAt: string;
-  destinationEmail: string;
+  isAnswered: boolean;
+  teacherAnswer?: string;
 }
 
 export interface AiChatMessage {

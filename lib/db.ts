@@ -1,9 +1,9 @@
 import { VideoLecture, DoubtItem, UserProfile } from './types';
 
-// Server-side persistent database store (1 Mobile = 1 Account & Unique Usernames)
 interface RegisteredUserRecord {
   mobileNumber: string;
   username: string;
+  playerId: string;
   pin: string;
   profile: UserProfile;
 }
@@ -12,8 +12,9 @@ interface ServerDbStore {
   otps: Map<string, { otp: string; expiresAt: number }>;
   users: Map<string, RegisteredUserRecord>;
   usernames: Set<string>;
-  friendRequests: Map<string, Set<string>>; // username -> set of requester usernames
-  friends: Map<string, Set<string>>; // username -> set of friend usernames
+  playerIds: Set<string>;
+  friendRequests: Map<string, Set<string>>;
+  friends: Map<string, Set<string>>;
   videos: VideoLecture[];
   doubts: DoubtItem[];
 }
@@ -25,6 +26,7 @@ if (!globalDb.__yasse_server_db) {
     otps: new Map(),
     users: new Map(),
     usernames: new Set(),
+    playerIds: new Set(),
     friendRequests: new Map(),
     friends: new Map(),
     videos: [],
@@ -58,7 +60,20 @@ export function verifyServerOtp(mobileNumber: string, userOtp: string): { succes
   return { success: true };
 }
 
-// 1 Mobile Number = 1 Unique Account & Unique Username Engine
+// 1 Mobile Number = 1 Account & Gamer Player ID Engine (#YASSE-XXXX)
+export function generateUniquePlayerId(mobileNumber: string): string {
+  const lastFour = mobileNumber.slice(-4);
+  let tag = `#YASSE-${lastFour}`;
+  let counter = 1;
+  while (serverDb.playerIds.has(tag)) {
+    const randomFour = Math.floor(1000 + Math.random() * 9000);
+    tag = `#YASSE-${randomFour}`;
+    counter++;
+    if (counter > 100) break;
+  }
+  return tag;
+}
+
 export function checkMobileExists(mobileNumber: string): boolean {
   return serverDb.users.has(mobileNumber);
 }
@@ -67,7 +82,7 @@ export function checkUsernameExists(username: string): boolean {
   return serverDb.usernames.has(username.toLowerCase());
 }
 
-export function registerUserAccount(mobileNumber: string, pin: string, profile: UserProfile): { success: boolean; error?: string } {
+export function registerUserAccount(mobileNumber: string, pin: string, profile: UserProfile): { success: boolean; error?: string; user?: UserProfile } {
   if (serverDb.users.has(mobileNumber)) {
     return { success: false, error: 'This mobile number is already registered. Please log in.' };
   }
@@ -77,9 +92,17 @@ export function registerUserAccount(mobileNumber: string, pin: string, profile: 
     return { success: false, error: `Username @${profile.username} is already taken. Please choose another.` };
   }
 
-  serverDb.users.set(mobileNumber, { mobileNumber, username: cleanUsername, pin, profile });
+  const playerId = generateUniquePlayerId(mobileNumber);
+  const fullProfile: UserProfile = {
+    ...profile,
+    playerId,
+  };
+
+  serverDb.users.set(mobileNumber, { mobileNumber, username: cleanUsername, playerId, pin, profile: fullProfile });
   serverDb.usernames.add(cleanUsername);
-  return { success: true };
+  serverDb.playerIds.add(playerId);
+
+  return { success: true, user: fullProfile };
 }
 
 export function loginUserAccount(mobileNumber: string, pin: string): { success: boolean; user?: UserProfile; error?: string } {
@@ -95,34 +118,39 @@ export function loginUserAccount(mobileNumber: string, pin: string): { success: 
   return { success: true, user: record.profile };
 }
 
-// REAL SOCIAL GRAPH & DYNAMIC LEADERBOARD ENGINE
+// REAL SOCIAL GRAPH & DYNAMIC LEADERBOARD ENGINE WITH PLAYER ID
 export function getGlobalLeaderboard(): UserProfile[] {
   const allProfiles: UserProfile[] = [];
   serverDb.users.forEach((rec) => {
     allProfiles.push(rec.profile);
   });
-
-  // Sort dynamically by streak & XP
   return allProfiles;
 }
 
-export function sendPeerFriendRequest(fromUsername: string, toUsername: string): { success: boolean; message?: string } {
+export function sendPeerFriendRequest(fromUsername: string, targetQuery: string): { success: boolean; message?: string } {
   const cleanFrom = fromUsername.toLowerCase();
-  const cleanTo = toUsername.toLowerCase();
+  const cleanTarget = targetQuery.trim().toLowerCase();
 
-  if (!serverDb.usernames.has(cleanTo)) {
-    return { success: false, message: 'Target username not found.' };
+  let targetUsername = '';
+
+  serverDb.users.forEach((rec) => {
+    if (rec.username.toLowerCase() === cleanTarget || rec.playerId.toLowerCase() === cleanTarget) {
+      targetUsername = rec.username;
+    }
+  });
+
+  if (!targetUsername) {
+    return { success: false, message: 'Target @username or #YASSE-XXXX Player ID not found.' };
   }
 
-  if (!serverDb.friendRequests.has(cleanTo)) {
-    serverDb.friendRequests.set(cleanTo, new Set());
+  if (!serverDb.friendRequests.has(targetUsername)) {
+    serverDb.friendRequests.set(targetUsername, new Set());
   }
 
-  serverDb.friendRequests.get(cleanTo)!.add(cleanFrom);
-  return { success: true, message: `Friend request sent to @${toUsername}.` };
+  serverDb.friendRequests.get(targetUsername)!.add(cleanFrom);
+  return { success: true, message: `Friend request sent to @${targetUsername}.` };
 }
 
-// UTC Clock-Synchronized Streak Engine (Strictly +1 per UTC Calendar Day)
 export function calculateUtcStreak(calendarLogs: string[], lastWatchDate: string): { newLogs: string[]; newStreakDays: number; isIncremented: boolean } {
   const utcToday = new Date().toISOString().split('T')[0];
   

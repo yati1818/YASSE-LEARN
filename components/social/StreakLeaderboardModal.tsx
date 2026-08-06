@@ -1,23 +1,24 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Trophy, X, Flame, UserPlus, Check, Sparkles, Users, Award, ShieldCheck, Search, Info } from 'lucide-react';
+import { Trophy, X, Flame, UserPlus, Search, Info, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface StreakLeaderboardModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentUsername?: string;
+  currentPlayerId?: string;
 }
 
 interface LeaderboardUser {
   id: string;
   username: string;
+  playerId: string;
   name: string;
   grade: string;
   streakDays: number;
   xp: number;
-  avatarUrl: string;
   isFriend: boolean;
   requestSent: boolean;
 }
@@ -26,6 +27,7 @@ export const StreakLeaderboardModal: React.FC<StreakLeaderboardModalProps> = ({
   isOpen,
   onClose,
   currentUsername = 'learner',
+  currentPlayerId = '#YASSE-9344',
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [leaderboardUsers, setLeaderboardUsers] = useState<LeaderboardUser[]>([]);
@@ -53,7 +55,7 @@ export const StreakLeaderboardModal: React.FC<StreakLeaderboardModalProps> = ({
             </div>
             <div>
               <h3 className="font-extrabold text-lg text-white">Live Global Streak Leaderboard</h3>
-              <div className="text-xs text-slate-400">Real registered learners ranked by active daily streak</div>
+              <div className="text-xs text-slate-400">Search learners by @username or #YASSE-XXXX Player ID</div>
             </div>
           </div>
 
@@ -69,8 +71,8 @@ export const StreakLeaderboardModal: React.FC<StreakLeaderboardModalProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search registered learners by @username or name..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-xs focus:border-cyan-500 font-mono"
+            placeholder="Search by @username or #YASSE-9344 Player Tag..."
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-xs focus:border-cyan-500 font-mono"
           />
         </div>
 
@@ -78,10 +80,10 @@ export const StreakLeaderboardModal: React.FC<StreakLeaderboardModalProps> = ({
         <div className="space-y-2.5 max-h-96 overflow-y-auto pr-1">
           {leaderboardUsers.length === 0 ? (
             <div className="py-12 text-center space-y-3 bg-slate-950 rounded-2xl border border-slate-800 p-6">
-              <Info size={36} className="mx-auto text-cyan-400" />
-              <div className="text-sm font-bold text-slate-200">No Other Learners Registered Yet</div>
+              <ShieldCheck size={36} className="mx-auto text-cyan-400" />
+              <div className="text-sm font-bold text-slate-200">No Other Registered Learners Found</div>
               <p className="text-xs text-slate-400 max-w-xs mx-auto">
-                Share YASSE Learn with classmates to build your peer study network and rank on the live streak leaderboard!
+                Share YASSE Learn with your classmates to connect using your Gamer Player ID <span className="text-cyan-300 font-mono font-bold">{currentPlayerId}</span>!
               </p>
             </div>
           ) : (
@@ -109,14 +111,12 @@ export const StreakLeaderboardModal: React.FC<StreakLeaderboardModalProps> = ({
                     #{idx + 1}
                   </div>
 
-                  <img src={u.avatarUrl} alt={u.name} className="w-10 h-10 rounded-xl object-cover shrink-0" />
-
                   <div>
                     <div className="font-bold text-xs text-white flex items-center gap-1.5">
                       <span>{u.name}</span>
-                      <span className="text-[10px] text-cyan-300 font-mono">@{u.username}</span>
+                      <span className="text-[10px] text-cyan-300 font-mono font-bold">{u.playerId}</span>
                     </div>
-                    <div className="text-[11px] text-slate-400">{u.grade} • {u.xp} Brain XP</div>
+                    <div className="text-[11px] text-slate-400">@{u.username} • {u.grade} • {u.xp} XP</div>
                   </div>
                 </div>
 
