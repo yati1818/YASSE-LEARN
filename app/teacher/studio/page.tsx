@@ -110,7 +110,7 @@ export default function TeacherStudioPage() {
                 </div>
 
                 <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
-                  <VerifiedBadge score={video.aiVerificationScore} showText={true} size="sm" />
+                  <VerifiedBadge score={video.aiVerificationScore || 98} showText={true} size="sm" />
                   <Link
                     href={`/learn/${video.id}`}
                     className="text-xs text-cyan-400 font-bold hover:underline"

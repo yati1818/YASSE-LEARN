@@ -52,6 +52,7 @@ export interface VideoLecture {
   teacherAvatarUrl?: string;
   durationMinutes: number;
   isVerified: boolean;
+  aiVerificationScore?: number;
   status: 'pending_ai_review' | 'pending_admin_approval' | 'published' | 'rejected';
   approvalToken?: string;
   createdAt: string;
