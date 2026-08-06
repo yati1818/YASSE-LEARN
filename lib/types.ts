@@ -8,6 +8,8 @@ export interface UserProfile {
   username: string; // unique handle e.g. "yashwardhan"
   playerId: string; // unique gamer tag e.g. "#YASSE-9344"
   name: string;
+  email?: string;
+  bio?: string;
   role: UserRole;
   grade: string;
   board: BoardType;
