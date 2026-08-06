@@ -31,10 +31,12 @@ export default function ProfilePage() {
     }
   };
 
-  const handlePrivacyToggle = (key: keyof typeof user.privacy) => {
+  const currentPrivacy = user.privacy || { isProfilePublic: true, showStreaks: true, showBadges: true, showDoubtsCount: true };
+
+  const handlePrivacyToggle = (key: keyof typeof currentPrivacy) => {
     const updatedPrivacy = {
-      ...user.privacy,
-      [key]: !user.privacy[key],
+      ...currentPrivacy,
+      [key]: !currentPrivacy[key],
     };
 
     saveUser({ ...user, privacy: updatedPrivacy });
@@ -125,22 +127,22 @@ export default function ProfilePage() {
             <button
               onClick={() => handlePrivacyToggle('isProfilePublic')}
               className={`p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all ${
-                user.privacy.isProfilePublic
+                currentPrivacy.isProfilePublic
                   ? 'bg-slate-950 border-cyan-500/40 text-cyan-300'
                   : 'bg-slate-950/40 border-slate-800 text-slate-500'
               }`}
             >
               <div className="flex items-center gap-2">
-                {user.privacy.isProfilePublic ? <Eye size={16} /> : <EyeOff size={16} />}
+                {currentPrivacy.isProfilePublic ? <Eye size={16} /> : <EyeOff size={16} />}
                 <span className="font-semibold">Public Profile Visible</span>
               </div>
-              <span className="font-bold">{user.privacy.isProfilePublic ? 'ON' : 'OFF'}</span>
+              <span className="font-bold">{currentPrivacy.isProfilePublic ? 'ON' : 'OFF'}</span>
             </button>
 
             <button
               onClick={() => handlePrivacyToggle('showStreaks')}
               className={`p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all ${
-                user.privacy.showStreaks
+                currentPrivacy.showStreaks
                   ? 'bg-slate-950 border-orange-500/40 text-orange-400'
                   : 'bg-slate-950/40 border-slate-800 text-slate-500'
               }`}
@@ -149,7 +151,7 @@ export default function ProfilePage() {
                 <Flame size={16} />
                 <span className="font-semibold">Show Video/Brain Streaks</span>
               </div>
-              <span className="font-bold">{user.privacy.showStreaks ? 'ON' : 'OFF'}</span>
+              <span className="font-bold">{currentPrivacy.showStreaks ? 'ON' : 'OFF'}</span>
             </button>
           </div>
         </div>
