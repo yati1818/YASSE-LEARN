@@ -12,6 +12,7 @@ export interface UserProfile {
   grade: string;
   board: BoardType;
   mobileNumber: string;
+  avatarUrl?: string;
   streakDays: number;
   xp: number;
   streakCalendarLogs: string[];
