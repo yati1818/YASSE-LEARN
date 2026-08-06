@@ -25,7 +25,7 @@ export default function DashboardPage() {
   const [showGamesModal, setShowGamesModal] = useState(false);
   const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
 
-  if (!isLoaded) return null;
+  if (!isLoaded || !user) return null;
 
   const userGrade = user?.grade || 'Class 10';
 
