@@ -13,6 +13,12 @@ export interface UserProfile {
   board: BoardType;
   mobileNumber: string;
   avatarUrl?: string;
+  privacy?: {
+    isProfilePublic: boolean;
+    showStreaks: boolean;
+    showBadges: boolean;
+    showDoubtsCount: boolean;
+  };
   streakDays: number;
   xp: number;
   streakCalendarLogs: string[];
