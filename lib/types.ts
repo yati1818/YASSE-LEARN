@@ -15,6 +15,7 @@ export interface UserProfile {
   board: BoardType;
   mobileNumber: string;
   privateMobileNumber?: string;
+  teacherMobileVerified?: boolean;
   avatarUrl?: string;
   googleSynced?: boolean;
   privacy?: {
