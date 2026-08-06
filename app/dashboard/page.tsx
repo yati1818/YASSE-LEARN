@@ -30,7 +30,7 @@ export default function DashboardPage() {
   const userGrade = user?.grade || 'Class 10';
 
   // Approved live public videos
-  const publicApprovedVideos = videos.filter(v => v.approvalStatus === 'approved');
+  const publicApprovedVideos = videos.filter(v => v.status === 'published' || v.isVerified);
 
   const filteredVideos = publicApprovedVideos.filter(v => {
     const matchesSubject = selectedSubject === 'All' || v.subject.toLowerCase() === selectedSubject.toLowerCase();
