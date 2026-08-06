@@ -13,6 +13,7 @@ export interface UserProfile {
   board: BoardType;
   mobileNumber: string;
   avatarUrl?: string;
+  googleSynced?: boolean;
   privacy?: {
     isProfilePublic: boolean;
     showStreaks: boolean;
