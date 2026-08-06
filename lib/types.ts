@@ -14,6 +14,7 @@ export interface UserProfile {
   grade: string;
   board: BoardType;
   mobileNumber: string;
+  privateMobileNumber?: string;
   avatarUrl?: string;
   googleSynced?: boolean;
   privacy?: {
