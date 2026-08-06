@@ -9,17 +9,17 @@ import { FeedbackModal } from '../feedback/FeedbackModal';
 import { TeacherUploadModal } from '../teacher/TeacherUploadModal';
 
 interface NavbarProps {
-  user: UserProfile | null;
-  streak: StreakData;
-  vibeCategory: 'junior' | 'middle' | 'senior';
+  user?: UserProfile | null;
+  streak?: StreakData;
+  vibeCategory?: 'junior' | 'middle' | 'senior';
   onGradeChange?: (newGrade: GradeLevel) => void;
   onVideoUploaded?: (video: any) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
-  user,
-  streak,
-  vibeCategory,
+  user = null,
+  streak = { currentStreak: 1, longestStreak: 1, lastWatchDate: '', calendarLogs: [], xp: 100 },
+  vibeCategory = 'middle',
   onGradeChange,
   onVideoUploaded,
 }) => {
