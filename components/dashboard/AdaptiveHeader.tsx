@@ -1,11 +1,12 @@
 'use client';
 
 import React from 'react';
-import { UserProfile } from '@/lib/types';
+import { UserProfile, VibeCategory } from '@/lib/types';
 import { Trophy, Flame, Zap, Shield, Sparkles, UserCheck } from 'lucide-react';
 
 interface AdaptiveHeaderProps {
   user: UserProfile;
+  vibeCategory?: VibeCategory;
   onOpenLeaderboard?: () => void;
   onOpenGames?: () => void;
 }
