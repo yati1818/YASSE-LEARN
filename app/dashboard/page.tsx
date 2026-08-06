@@ -274,10 +274,10 @@ export default function DashboardPage() {
           {/* Col 3: GitHub-Style Activity Streak Heatmap */}
           <div>
             <GitHubStreakHeatmap
-              calendarLogs={streak.calendarLogs || []}
-              videoStreakDays={streak.videoStreakDays}
-              brainStreakDays={streak.brainStreakDays}
-              totalXP={streak.totalXP}
+              calendarLogs={user.streakCalendarLogs || []}
+              videoStreakDays={user.streakDays}
+              brainStreakDays={user.streakDays}
+              totalXP={user.xp}
             />
           </div>
 
