@@ -15,7 +15,7 @@ export default function TeacherStudioPage() {
 
   if (!isLoaded) return null;
 
-  const teacherVideos = videos.filter(v => v.teacherVerified || v.teacherName === user?.name);
+  const teacherVideos = videos.filter(v => v.isVerified || v.teacherName === user?.name);
 
   return (
     <div className="min-h-screen bg-[#080c14] text-slate-100 flex flex-col justify-between">
