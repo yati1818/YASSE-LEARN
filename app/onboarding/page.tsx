@@ -45,7 +45,7 @@ function OnboardingContent() {
   const [teacherQualification, setTeacherQualification] = useState('M.Sc. Mathematics & Pedagogy');
 
   useEffect(() => {
-    const roleParam = searchParams.get('role') as UserRole;
+    const roleParam = searchParams?.get('role') as UserRole;
     if (roleParam) setRole(roleParam);
   }, [searchParams]);
 

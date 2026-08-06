@@ -1,24 +1,33 @@
 # 🎓 YASSE Learn — Premier Open Educational Web Platform
 
-[![Live App](https://img.shields.io/badge/Live_App-yasse--learn.vercel.app-0070F3?style=for-the-badge&logo=vercel&logoColor=white)](https://yasse-learn.vercel.app)
+<div align="center">
+
+# 🚀 [Launch Live Application — yasse-learn.vercel.app](https://yasse-learn.vercel.app)
+
+[![Live App](https://img.shields.io/badge/🚀_Launch_Live_App-yasse--learn.vercel.app-0070F3?style=for-the-badge&logo=vercel&logoColor=white)](https://yasse-learn.vercel.app)
 [![Next.js](https://img.shields.io/badge/Framework-Next.js_14-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/Language-TypeScript_5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Standalone_App_Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://yasse-learn.vercel.app)
-[![License](https://img.shields.io/badge/License-MIT-green.style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-> **Live Production Deployment**: [https://yasse-learn.vercel.app](https://yasse-learn.vercel.app)  
-> **Official GitHub Repository**: [https://github.com/yati1818/YASSE-LEARN](https://github.com/yati1818/YASSE-LEARN)
+</div>
 
 ---
 
-## 🌟 Overview
+> **Repository Description**: Premier Free Educational Ecosystem for Class 3-12 | Secure Real-Time OTP Authentication, Streak Leaderboard & AI-Verified Teacher Portal 🚀  
+> **Live Interface Link**: [https://yasse-learn.vercel.app](https://yasse-learn.vercel.app)  
+> **GitHub Repository**: [https://github.com/yati1818/YASSE-LEARN](https://github.com/yati1818/YASSE-LEARN)
 
-**YASSE Learn** is a production-grade, zero-cost, open-source educational powerhouse designed for students from **Class 3 to Class 12** across **CBSE, ICSE, State Board, and International** curricula. Built with **Next.js 14**, **Tailwind CSS**, and **Framer Motion**, YASSE Learn connects Students, Teachers, and AI in a seamless, zero-bug, truth-driven ecosystem.
+---
+
+## 🌟 Platform Highlights
+
+**YASSE Learn** is a production-grade, zero-cost, open-source educational powerhouse designed for students from **Class 3 to Class 12** across **CBSE, ICSE, State Board, and International** curricula. Built with **Next.js 14 App Router**, **Tailwind CSS**, and **Framer Motion**, YASSE Learn seamlessly connects Students, Teachers, and AI.
 
 ### Key Architectural Pillars:
 
-- 📱 **Mobile-First PWA Architecture**: Installable native app shell with offline Service Worker caching, touch bottom tabs, and instant update notifications.
+- 📱 **Mobile-First PWA Architecture**: Native app manifest with standalone display, offline Service Worker caching, touch bottom tabs, and instant update banners.
 - 🔑 **Strict 10-Digit Mobile OTP Authentication**: Validates Indian 10-digit mobile numbers (`^[6-9]\d{9}$`), enforces 1-Mobile-1-Account uniqueness constraints, and verifies cryptographically generated 6-digit OTP codes.
 - 👤 **Unique `@username` Handle Engine**: Database-backed unique handle validation preventing duplicate handles across the platform.
 - ⏱ **30-Minute Time-Gated Real-Time Daily Streak Engine**: Requires cumulative **30 minutes of active learning** per calendar day to unlock daily streak flames (🔥) and Brain Synapse XP (+100 XP).
@@ -128,25 +137,17 @@ YASSE-LEARN/
 
 ---
 
-## 🛡️ Production Verification & Build
+## 🛡️ Production Build Verification
 
 Verify production build cleanliness locally:
 
 ```bash
-npx next build
-```
-
-Expected Output:
-```bash
-✓ Compiled successfully
-✓ Generating static pages (18/18)
-Finalizing page optimization ...
-Collecting build traces ...
+npm run build
 ```
 
 ---
 
-## 📬 Contact & Developer Telemetry Target
+## 📬 Contact & Telemetry Target
 
 - **Live Application**: [https://yasse-learn.vercel.app](https://yasse-learn.vercel.app)
 - **GitHub Repository**: [https://github.com/yati1818/YASSE-LEARN](https://github.com/yati1818/YASSE-LEARN)
@@ -156,4 +157,4 @@ Collecting build traces ...
 
 ## 📄 License
 
-Distributed under the **MIT License**. See `LICENSE` for more information.
+Distributed under the **MIT License**.
