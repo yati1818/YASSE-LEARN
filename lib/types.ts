@@ -49,6 +49,7 @@ export interface VideoLecture {
   thumbnailUrl?: string;
   teacherName: string;
   teacherId: string;
+  teacherAvatar?: string;
   teacherAvatarUrl?: string;
   durationMinutes: number;
   isVerified: boolean;
@@ -81,13 +82,23 @@ export interface TeacherProfile {
 
 export interface DoubtItem {
   id: string;
+  videoId?: string;
+  videoTitle?: string;
+  studentId?: string;
   studentName: string;
   studentGrade: string;
+  teacherId?: string;
+  teacherEmail?: string;
+  timestampInVideo?: string | number;
+  questionTitle?: string;
+  questionDetails?: string;
   questionText: string;
+  urgency?: string;
   subject: string;
   createdAt: string;
   isAnswered: boolean;
   teacherAnswer?: string;
+  status?: string;
 }
 
 export interface StreakData {

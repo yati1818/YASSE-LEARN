@@ -79,7 +79,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({ video, vibeCategory }) => 
         <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <img
-              src={video.teacherAvatar}
+              src={video.teacherAvatar || video.teacherAvatarUrl || 'https://api.dicebear.com/7.x/bottts/svg?seed=Teacher'}
               alt={video.teacherName}
               className="w-7 h-7 rounded-full object-cover border border-amber-400/40"
             />
