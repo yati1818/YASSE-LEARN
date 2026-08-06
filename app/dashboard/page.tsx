@@ -252,9 +252,9 @@ export default function DashboardPage() {
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-cyan-300">{d.studentName} ({d.studentGrade})</span>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                        d.status === 'answered' ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30' : 'bg-amber-950 text-amber-400 border border-amber-500/30'
+                        d.isAnswered ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30' : 'bg-amber-950 text-amber-400 border border-amber-500/30'
                       }`}>
-                        {d.status === 'answered' ? '✓ Answered by Teacher' : '⏱ Pending Response'}
+                        {d.isAnswered ? '✓ Answered by Teacher' : '⏱ Pending Response'}
                       </span>
                     </div>
                     <div className="text-sm font-semibold text-slate-200">{d.questionTitle}</div>
