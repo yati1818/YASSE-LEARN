@@ -98,7 +98,7 @@ export default function TeacherStudioPage() {
             {teacherVideos.map((video) => (
               <div key={video.id} className="p-4 rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
                 <div className="relative aspect-video rounded-2xl overflow-hidden bg-slate-950">
-                  <img src={video.thumbnailUrl} alt={video.title} className="w-full h-full object-cover" />
+                  <img src={video.thumbnailUrl || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60'} alt={video.title} className="w-full h-full object-cover" />
                   <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-slate-900/90 text-[10px] font-bold text-cyan-300 border border-slate-700">
                     {video.grade} • {video.subject}
                   </div>

@@ -46,6 +46,7 @@ export interface VideoLecture {
   subject: string;
   chapter: string;
   youtubeUrl: string;
+  thumbnailUrl?: string;
   teacherName: string;
   teacherId: string;
   teacherAvatarUrl?: string;
