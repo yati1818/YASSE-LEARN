@@ -257,12 +257,12 @@ export default function DashboardPage() {
                         {d.isAnswered ? '✓ Answered by Teacher' : '⏱ Pending Response'}
                       </span>
                     </div>
-                    <div className="text-sm font-semibold text-slate-200">{d.questionTitle}</div>
-                    <p className="text-xs text-slate-400 line-clamp-2">{d.questionDetails}</p>
+                    <div className="text-sm font-semibold text-slate-200">{d.subject} - {d.studentGrade}</div>
+                    <p className="text-xs text-slate-400 line-clamp-2">{d.questionText}</p>
                     
-                    {d.answerText && (
+                    {d.teacherAnswer && (
                       <div className="mt-2 p-3 rounded-xl bg-purple-950/40 border border-purple-500/30 text-xs text-purple-200">
-                        <strong>Teacher Reply:</strong> {d.answerText}
+                        <strong>Teacher Reply:</strong> {d.teacherAnswer}
                       </div>
                     )}
                   </div>
