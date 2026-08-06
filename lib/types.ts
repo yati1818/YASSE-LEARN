@@ -1,5 +1,7 @@
 export type UserRole = 'student' | 'teacher';
 export type BoardType = 'CBSE' | 'ICSE' | 'State Board' | 'International';
+export type GradeLevel = 'Class 3' | 'Class 4' | 'Class 5' | 'Class 6' | 'Class 7' | 'Class 8' | 'Class 9' | 'Class 10' | 'Class 11' | 'Class 12';
+export type VibeCategory = 'junior' | 'middle' | 'senior';
 
 export interface UserProfile {
   id: string;
@@ -70,6 +72,14 @@ export interface DoubtItem {
   createdAt: string;
   isAnswered: boolean;
   teacherAnswer?: string;
+}
+
+export interface StreakData {
+  currentStreak: number;
+  longestStreak: number;
+  lastWatchDate: string;
+  calendarLogs: string[];
+  xp: number;
 }
 
 export interface AiChatMessage {

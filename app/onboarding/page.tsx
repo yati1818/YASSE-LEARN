@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Shield, ArrowRight, RefreshCw, CheckCircle2, Lock, Smartphone, Sparkles, AlertCircle, Copy } from 'lucide-react';
-import { useUserStore } from '@/lib/store';
+import { useYasseStore } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function OnboardingContent() {
@@ -13,7 +13,7 @@ function OnboardingContent() {
   const initialRole = (searchParams?.get('role') as 'student' | 'teacher') || 'student';
   const initialUsername = searchParams?.get('username') || '';
 
-  const { login } = useUserStore();
+  const { login } = useYasseStore();
 
   const [mobileNumber, setMobileNumber] = useState(initialMobile);
   const [otpCode, setOtpCode] = useState('');
